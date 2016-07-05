@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/scenes/VAME_PhaseII.unity
+  isLoaded: 1
+  isActive: 1
