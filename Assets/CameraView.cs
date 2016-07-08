@@ -6,6 +6,7 @@ public class CameraView : MonoBehaviour
 {
     float scaleRot = 0.2f;
     Vector3 lastMp;
+    bool isCameraControl = false;
 
 
     void Start()
@@ -13,6 +14,7 @@ public class CameraView : MonoBehaviour
         lastMp = Input.mousePosition;
     }
 
+    //public bool 
     void Update()
     {
         var mp = Input.mousePosition;

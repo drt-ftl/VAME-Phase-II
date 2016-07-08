@@ -92,8 +92,12 @@
     <Compile Include="Assets\scripts\FileIO\FileTypes\objInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\stlInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\LoadFile.cs" />
+    <Compile Include="Assets\scripts\Sloxels\Info.cs" />
+    <Compile Include="Assets\scripts\Sloxels\Sloxel.cs" />
     <Compile Include="Assets\scripts\Sloxels\Sloxelizer.cs" />
+    <Compile Include="Assets\scripts\Sloxels\Sloxelizer2.cs" />
     <Compile Include="Assets\scripts\Sloxels\Voxelizer.cs" />
+    <Compile Include="Assets\scripts\TogglePanelButton.cs" />
     <Compile Include="Assets\scripts\UI\DragPanel.cs" />
     <Compile Include="Assets\scripts\UI\InspectorL.cs" />
     <Compile Include="Assets\scripts\UI\TopMenu.cs" />

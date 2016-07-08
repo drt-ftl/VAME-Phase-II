@@ -15,9 +15,7 @@ public class VAME_Manager : MonoBehaviour
     public Material matAmbiOcc;
     public Material pathMat;
     public Color pathColor;
-    public RectTransform viewportRect;
     public float initialScale = 4;
-    public static Vector3 viewportOrigin;
     public enum type { model, paths, points }
     public static type _type;
     public static Vector3 Max;
@@ -26,38 +24,46 @@ public class VAME_Manager : MonoBehaviour
     public static Vector3 PathsMin;
     private Vector3 screenCenter;
     public Material glMat;
+    public GameObject ball;
 
     public static List<Triangle> triangleList = new List<Triangle>();
     public static List<Triangle> tempTriangleList = new List<Triangle>();
     public static List<GameObject> Meshes = new List<GameObject>();
     public static List<string> modelCode = new List<string>();
     public static List<string> pathsCode = new List<string>();
-    public static List<PathLine> gcdPathLines = new List<PathLine>();
+    public static Dictionary<float, List<PathLine>> gcdPathLines = new Dictionary<float, List<PathLine>>();
 
-    void Start ()
+    void Start()
     {
         screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         instance = this;
-	}
+    }
 
-	void OnGUI ()
+    void Update()
     {
-        RectTransformExtensions.SetWidth(viewportRect, Screen.width - 411);
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+    }
+    void OnGUI()
+    {
         GL.LoadProjectionMatrix(Camera.main.projectionMatrix);
         GL.modelview = Camera.main.worldToCameraMatrix;
 
-        foreach (var gcdLine in gcdPathLines)
+        foreach (var gcdLineList in gcdPathLines.Values)
         {
-            var p1 = modelHolder.TransformPoint(gcdLine.p1);
-            var p2 = modelHolder.TransformPoint(gcdLine.p2);
-            var col = pathColor;
-            col.a = InspectorL.instance.pathVisibiltySlider.value;
-            GL.Begin(GL.LINES);
-            pathMat.SetPass(0);
-            GL.Color(col);
-            GL.Vertex(p1);
-            GL.Vertex(p2);
-            GL.End();
+            foreach (var gcdLine in gcdLineList)
+            {
+                var p1 = modelHolder.TransformPoint(gcdLine.p1);
+                var p2 = modelHolder.TransformPoint(gcdLine.p2);
+                var col = pathColor;
+                col.a = InspectorL.instance.pathVisibiltySlider.value;
+                GL.Begin(GL.LINES);
+                pathMat.SetPass(0);
+                GL.Color(col);
+                GL.Vertex(p1);
+                GL.Vertex(p2);
+                GL.End();
+            }
         }
 
         if (InspectorL.isWireframe)
@@ -160,7 +166,7 @@ public class VAME_Manager : MonoBehaviour
 
     public void Redraw()
     {
-        var fullTempTriList = new List<Triangle>();        
+        var fullTempTriList = new List<Triangle>();
         foreach (var m in Meshes)
         {
             Destroy(m.gameObject);
@@ -195,10 +201,10 @@ public class VAME_Manager : MonoBehaviour
                 mm.AddTriangle(tri.p1, tri.p2, tri.p3, tri.norm, tri._binary);
             }
             mm.MergeMesh();
-                mm.gameObject.transform.SetParent(modelHolder);
-                mm.gameObject.transform.localPosition = Vector3.zero;
-                mm.gameObject.transform.localEulerAngles = Vector3.zero;
-                Meshes.Add(mm.gameObject);
+            mm.gameObject.transform.SetParent(modelHolder);
+            mm.gameObject.transform.localPosition = Vector3.zero;
+            mm.gameObject.transform.localEulerAngles = Vector3.zero;
+            Meshes.Add(mm.gameObject);
         }
         cSection.instance.DoSlices(20);
     }
@@ -220,7 +226,9 @@ public class VAME_Manager : MonoBehaviour
             t.p3 -= c;
         }
         Max *= ratio;
+        Max -= c;
         Min *= ratio;
+        Min -= c;
     }
 
     public void NormalizePaths()
@@ -229,14 +237,40 @@ public class VAME_Manager : MonoBehaviour
         var biggest = Mathf.Max(size.x, size.y, size.z);
         var ratio = Mathf.Abs(initialScale / biggest);
         var c = ((PathsMax + PathsMin) * ratio) / 2.0f;
-        foreach (var l in gcdPathLines)
+        var newDict = new Dictionary<float, List<PathLine>>();
+        foreach (var kvp in gcdPathLines)
         {
-            l.p1 *= ratio;
-            l.p1 -= c;
-            l.p2 *= ratio;
-            l.p2 -= c;
+            var newKey = kvp.Key;
+            newKey *= ratio;
+            newKey -= c.y;
+            newDict.Add(newKey, new List<PathLine>());            
+            foreach (var l in kvp.Value)
+            {
+                l.p1 *= ratio;
+                l.p1 -= c;
+                l.p2 *= ratio;
+                l.p2 -= c;
+                newDict[newKey].Add(l);
+            }            
         }
+        gcdPathLines.Clear();
+        gcdPathLines = newDict;
         PathsMax *= ratio;
+        PathsMax -= c;
         PathsMin *= ratio;
+        PathsMin -= c;
+    }
+
+    public void DoSloxels()
+    {
+        var sl = new Sloxelizer2(6);
+        foreach (var list in sl.sloxels)
+        {
+            foreach (var sloxel in list.Value)
+            {
+                var newBall = Instantiate(ball, sloxel.origin, Quaternion.identity) as GameObject;
+                newBall.GetComponent<Info>().Activate(sloxel, sl);
+            }
+        }
     }
 }

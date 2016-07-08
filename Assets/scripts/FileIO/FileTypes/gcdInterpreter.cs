@@ -111,6 +111,7 @@ public class gcdInterpreter
 
     void DoG(string[] _chunks)
     {
+        if (LaserOn) return;
         if (_chunks[1].Contains('F')) return;
         if (_chunks[1].StartsWith("Z"))
         {
@@ -152,7 +153,11 @@ public class gcdInterpreter
         }
         else
         {
-            VAME_Manager.gcdPathLines.Add(new PathLine(lastPoint, newVertex));
+            if (!VAME_Manager.gcdPathLines.ContainsKey(y))
+            {
+                VAME_Manager.gcdPathLines.Add(y, new List<PathLine>());
+            }
+            VAME_Manager.gcdPathLines[y].Add(new PathLine(lastPoint, newVertex));
             lastPoint = Vector3.one * 10000;
         }
     }
