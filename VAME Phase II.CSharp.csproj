@@ -83,7 +83,9 @@
   <ItemGroup>
     <Compile Include="Assets\CameraView.cs" />
     <Compile Include="Assets\GUI_3D.cs" />
+    <Compile Include="Assets\VoxelInspector.cs" />
     <Compile Include="Assets\YesNoCancelDialog.cs" />
+    <Compile Include="Assets\scenes\GcdInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\RectTransformExtensions.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\Splitter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\Triangle.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Assets\scripts\Sloxels\Sloxel.cs" />
     <Compile Include="Assets\scripts\Sloxels\Sloxelizer.cs" />
     <Compile Include="Assets\scripts\Sloxels\Sloxelizer2.cs" />
+    <Compile Include="Assets\scripts\Sloxels\Voxel.cs" />
     <Compile Include="Assets\scripts\Sloxels\Voxelizer.cs" />
     <Compile Include="Assets\scripts\TogglePanelButton.cs" />
     <Compile Include="Assets\scripts\UI\DragPanel.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="Assets\scripts\UI\TopMenu.cs" />
     <Compile Include="Assets\scripts\VAME_Manager.cs" />
     <Compile Include="Assets\scripts\VAMEentities\model.cs" />
+    <Compile Include="Assets\testLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

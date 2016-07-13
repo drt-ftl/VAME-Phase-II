@@ -13,6 +13,8 @@ public class gcdInterpreter
     public Vector3 Max { get; set; }
     public bool LaserOn = false;
     private Vector3 lastPoint;
+    private List<Vector3> verts = new List<Vector3>();
+    int i = 0;
 
     public gcdInterpreter(string _filename)
     {
@@ -20,17 +22,13 @@ public class gcdInterpreter
         Min = Vector3.one * 10000;
         Max = Vector3.one * -10000;
 
+        VAME_Manager.pathPoints.Clear();
+        VAME_Manager.pathLines.Clear();
         var reader = new StreamReader(_filename);
         while (!reader.EndOfStream)
         {
-            var s = reader.ReadToEnd();
-            //s = s.Replace("  ", " ");
-            //s = s.Replace("  ", " ");
-            string[] lines = s.Split("\n"[0]);
-            foreach (string item in lines)
-            {
-                scanGCD(item);
-            }
+            var s = reader.ReadLine();
+            scanGCD(s);
         }
         VAME_Manager.PathsMax = Max;
         VAME_Manager.PathsMin = Min;
@@ -40,11 +38,28 @@ public class gcdInterpreter
         InspectorL._mode = InspectorL.Mode.paths;
         InspectorL.instance.codeDummy.SetHeight(VAME_Manager.pathsCode.Count);
         InspectorL.instance.CodeArea(0);
+        foreach (var list in VAME_Manager.pathPoints)
+        {
+            foreach (var v1 in list.Value)
+            {
+                var index = VAME_Manager.pathPoints[list.Key].IndexOf(v1);
+                if (index <= 0)
+                    continue;
+                //if (!LaserOnModelRef[index]) continue;
+                var v0 = VAME_Manager.pathPoints[list.Key][index - 1];
+                var newSegment = new PathLine(v0, v1);
+                if (!VAME_Manager.pathLines.ContainsKey(list.Key))
+                {
+                    VAME_Manager.pathLines.Add(list.Key, new List<PathLine>());
+                }
+                VAME_Manager.pathLines[list.Key].Add(newSegment);
+            }
+        }
+
     }
 
     void scanGCD(string _line)
     {
-        VAME_Manager.pathsCode.Add(_line);
         if (_line == "\r\n") return;
         _line = _line.Trim();
         //gcdCode.Add(_line.ToString() + "\r\n");
@@ -59,16 +74,17 @@ public class gcdInterpreter
                 }
                 break;
             case 'O':
-                if (chunks[0][1] == 'U')
-                {
-                    if (chunks.Length > 1 && chunks[1].Contains(","))
-                    {
-                        var command = chunks[1].Split(',');
-                        if (command[1] == "0")
-                            LaserOn = false;
-                        else LaserOn = true;
-                    }
-                }
+                //if (chunks[0][1] == 'U')
+                //{
+                //    if (chunks.Length > 1 && chunks[1].Contains(","))
+                //    {
+                //        var command = chunks[1].Split(',');
+                //        if (command[1] == "0")
+                //            LaserOn = false;
+                //        else LaserOn = true;
+                //    }
+                //}
+                //    gcdInterpreter.StartsWithO(_line);
                 break;
             default:
                 break;
@@ -111,7 +127,7 @@ public class gcdInterpreter
 
     void DoG(string[] _chunks)
     {
-        if (LaserOn) return;
+        //if (LaserOn) return;
         if (_chunks[1].Contains('F')) return;
         if (_chunks[1].StartsWith("Z"))
         {
@@ -120,6 +136,7 @@ public class gcdInterpreter
             if (float.TryParse(Y, out _y))
             {
                 y = _y;
+                i++;
                 return;
             }
         }
@@ -147,19 +164,23 @@ public class gcdInterpreter
         if (z < Min.z) min.z = z;
         Max = max;
         Min = min;
-        if (lastPoint == Vector3.one * 10000)
-        {
-            lastPoint = newVertex;
-        }
-        else
-        {
-            if (!VAME_Manager.gcdPathLines.ContainsKey(y))
-            {
-                VAME_Manager.gcdPathLines.Add(y, new List<PathLine>());
-            }
-            VAME_Manager.gcdPathLines[y].Add(new PathLine(lastPoint, newVertex));
-            lastPoint = Vector3.one * 10000;
-        }
+        
+        if (!VAME_Manager.pathPoints.ContainsKey(y))
+            VAME_Manager.pathPoints.Add(y, new List<Vector3>());
+        VAME_Manager.pathPoints[y].Add(newVertex);
+
+
+        //if (verts.Count < 2)
+        //    verts.Add(newVertex);
+        //if (verts.Count >= 2)
+        //{
+        //    if (!VAME_Manager.gcdPathLines.ContainsKey(y))
+        //    {
+        //        VAME_Manager.gcdPathLines.Add(y, new List<PathLine>());
+        //    }
+        //    VAME_Manager.gcdPathLines[y].Add(new PathLine(verts[0], verts[1]));
+        //    verts.Clear();
+        //}
     }
 
     public void StartsWithO(string _line)

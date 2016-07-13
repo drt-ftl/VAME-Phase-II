@@ -18,7 +18,7 @@ public class CameraView : MonoBehaviour
     void Update()
     {
         var mp = Input.mousePosition;
-        if (mp.x < 250)
+        if (mp.x < 250 || mp.x > Screen.width - 250)
         {
             lastMp = mp;
             return;

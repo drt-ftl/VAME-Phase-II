@@ -25,13 +25,19 @@ public class VAME_Manager : MonoBehaviour
     private Vector3 screenCenter;
     public Material glMat;
     public GameObject ball;
+    public Transform voxelHolder;
+    public Slider resolution;
 
     public static List<Triangle> triangleList = new List<Triangle>();
     public static List<Triangle> tempTriangleList = new List<Triangle>();
     public static List<GameObject> Meshes = new List<GameObject>();
     public static List<string> modelCode = new List<string>();
     public static List<string> pathsCode = new List<string>();
-    public static Dictionary<float, List<PathLine>> gcdPathLines = new Dictionary<float, List<PathLine>>();
+    public static Dictionary<float, List<PathLine>> pathLines = new Dictionary<float, List<PathLine>>();
+    public static Dictionary<float, List<Vector3>> pathPoints = new Dictionary<float, List<Vector3>>();
+
+    public static List<Vector3> gcdLineEndpoints = new List<Vector3>();
+    public static List<PathLine> pl = new List<PathLine>();
 
     void Start()
     {
@@ -43,45 +49,60 @@ public class VAME_Manager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+        //foreach (var pathList in pathPoints.Values)
+        //{
+        //    for ( int i = 0; i < pathList.Count; i++)
+        //    {
+        //        if (i == 0) continue;
+        //        var p1 = (pathList[i - 1]);
+        //        var p2 = (pathList[i]);
+        //    }
+        //    GL.End();
+        //}
     }
     void OnGUI()
     {
         GL.LoadProjectionMatrix(Camera.main.projectionMatrix);
         GL.modelview = Camera.main.worldToCameraMatrix;
-
-        foreach (var gcdLineList in gcdPathLines.Values)
+        var col = pathColor;
+        col.a = InspectorL.instance.pathVisibiltySlider.value;
+        GL.Begin(GL.LINES);
+        pathMat.SetPass(0);
+        GL.Color(col);
+        foreach (var list in pathLines)
         {
-            foreach (var gcdLine in gcdLineList)
+            foreach (var line in list.Value)
             {
-                var p1 = modelHolder.TransformPoint(gcdLine.p1);
-                var p2 = modelHolder.TransformPoint(gcdLine.p2);
-                var col = pathColor;
-                col.a = InspectorL.instance.pathVisibiltySlider.value;
-                GL.Begin(GL.LINES);
-                pathMat.SetPass(0);
-                GL.Color(col);
+                var p1 = (line.p1);
+                var p2 = (line.p2);
                 GL.Vertex(p1);
                 GL.Vertex(p2);
-                GL.End();
             }
         }
+        GL.End();
 
         if (InspectorL.isWireframe)
         {
-            foreach (var csLines in cSection.cSections)
+            GL.Begin(GL.LINES);
+            glMat.SetPass(0);
+            GL.Color(new Color(0f, 0f, 0f, InspectorL.modelVisibility));
+            foreach (var csLines in cSection.cSectionsX)
             {
                 foreach (var l in csLines)
                 {
-                    var p1 = modelHolder.TransformPoint(l.p1);
-                    var p2 = modelHolder.TransformPoint(l.p2);
-                    GL.Begin(GL.LINES);
-                    glMat.SetPass(0);
-                    GL.Color(new Color(0f, 0f, 0f, InspectorL.modelVisibility));
-                    GL.Vertex(p1);
-                    GL.Vertex(p2);
-                    GL.End();
+                    GL.Vertex(l.p1);
+                    GL.Vertex(l.p2);
                 }
             }
+            foreach (var csLines in cSection.cSectionsY)
+            {
+                foreach (var l in csLines)
+                {
+                    GL.Vertex(l.p1);
+                    GL.Vertex(l.p2);
+                }
+            }
+            GL.End();
         }
     }
 
@@ -93,6 +114,7 @@ public class VAME_Manager : MonoBehaviour
 
     public void ClearModel()
     {
+        ClearVoxels();
         Max = Vector3.one * -100000;
         Min = Vector3.one * 100000;
         triangleList.Clear();
@@ -108,9 +130,21 @@ public class VAME_Manager : MonoBehaviour
 
     public void ClearPaths()
     {
+        ClearVoxels();
         PathsMax = Vector3.one * -100000;
         PathsMin = Vector3.one * 100000;
-        gcdPathLines.Clear();
+        pathPoints.Clear();
+        pathLines.Clear();
+    }
+    public void ClearVoxels()
+    {
+        if (Sloxelizer2.instance == null) return;
+        foreach (var v in Sloxelizer2.instance.voxels)
+        {
+            Destroy(v.Cube);
+        }
+        Sloxelizer2.instance.voxels.Clear();
+        Sloxelizer2.instance.sloxels.Clear();
     }
 
     public void LoadFile()
@@ -206,7 +240,6 @@ public class VAME_Manager : MonoBehaviour
             mm.gameObject.transform.localEulerAngles = Vector3.zero;
             Meshes.Add(mm.gameObject);
         }
-        cSection.instance.DoSlices(20);
     }
 
     public void NormalizeModel()
@@ -237,24 +270,23 @@ public class VAME_Manager : MonoBehaviour
         var biggest = Mathf.Max(size.x, size.y, size.z);
         var ratio = Mathf.Abs(initialScale / biggest);
         var c = ((PathsMax + PathsMin) * ratio) / 2.0f;
-        var newDict = new Dictionary<float, List<PathLine>>();
-        foreach (var kvp in gcdPathLines)
+        var newDict = new Dictionary<float, List<Vector3>>();
+        foreach (var kvp in pathPoints)
         {
             var newKey = kvp.Key;
             newKey *= ratio;
             newKey -= c.y;
-            newDict.Add(newKey, new List<PathLine>());            
-            foreach (var l in kvp.Value)
+            newDict.Add(newKey, new List<Vector3>());            
+            foreach (var p in kvp.Value)
             {
-                l.p1 *= ratio;
-                l.p1 -= c;
-                l.p2 *= ratio;
-                l.p2 -= c;
-                newDict[newKey].Add(l);
+                var _p = p;
+                _p *= ratio;
+                _p  -= c;
+                newDict[newKey].Add(_p);
             }            
         }
-        gcdPathLines.Clear();
-        gcdPathLines = newDict;
+        pathPoints.Clear();
+        pathPoints = newDict;
         PathsMax *= ratio;
         PathsMax -= c;
         PathsMin *= ratio;
@@ -263,14 +295,21 @@ public class VAME_Manager : MonoBehaviour
 
     public void DoSloxels()
     {
-        var sl = new Sloxelizer2(6);
-        foreach (var list in sl.sloxels)
+        ClearVoxels();
+        var sl = new Sloxelizer2((int)resolution.value);
+        foreach (var voxel in sl.voxels)
         {
-            foreach (var sloxel in list.Value)
-            {
-                var newBall = Instantiate(ball, sloxel.origin, Quaternion.identity) as GameObject;
-                newBall.GetComponent<Info>().Activate(sloxel, sl);
-            }
+            var newVoxel = Instantiate(ball, voxel.origin, Quaternion.identity) as GameObject;
+            newVoxel.transform.localScale = voxel.Scale * 0.99f;
+            newVoxel.GetComponent<Info>().Activate(voxel, sl);
+            newVoxel.transform.SetParent(voxelHolder);
+            voxel.Cube = newVoxel;
         }
+    }
+
+    public void ResolutionChanged()
+    {
+        var res = resolution.value;
+        resolution.gameObject.GetComponentInChildren<Text>().text = "Resolution: " + res.ToString("f0");
     }
 }

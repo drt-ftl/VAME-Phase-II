@@ -9,9 +9,9 @@ public class LoadFile
     {
         var ofd = new OpenFileDialog();
         ofd.InitialDirectory = UnityEngine.Application.dataPath + "/Models";
-        ofd.Filter = "Model Files (*.stl, *.obj) | *.stl;*.STL;*.obj;*.OBJ";
+        ofd.Filter = "Model Files (*.stl, *.obj) | *.stl";// ;*.STL;*.obj;*.OBJ";
         ofd.Filter += " | Path Files (*.gcd) | *.gcd";
-        if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (ofd.ShowDialog() == DialogResult.OK)
         {
             var n = ofd.FileName;
             if (n.ToLower().EndsWith(".stl"))

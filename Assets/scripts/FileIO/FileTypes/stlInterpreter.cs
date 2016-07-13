@@ -88,7 +88,6 @@ public class stlInterpreter
                 }//Makes chunk of 50
                 var triangle = chunk.ToArray();
                 var str = BitConverter.ToString(chunk.ToArray());
-                VAME_Manager.pathsCode.Add(str);
                 ParseBinaryVertices(triangle);
                 sPos += 50;
             }

@@ -6,44 +6,49 @@ using System.Collections.Generic;
 public class Sloxelizer
 {
     int numberOfThem = 0;
+    public Dictionary<float, List<Sloxel>> sloxels = new Dictionary<float, List<Sloxel>>();
+    public List<Voxel> voxels = new List<Voxel>();
 
     public Sloxelizer(float divs)
     {
-        var sloxelCenters = new Dictionary<float, List<Vector3>>();
-        var min = VAME_Manager.Min;
-        var max = VAME_Manager.Max;
+        var min = VAME_Manager.PathsMin;
+        var max = VAME_Manager.PathsMax;
         var biggest = Mathf.Max(Mathf.Abs(max.x - min.x), Mathf.Abs(max.z - min.z));
         var increment = 4.0f / divs;
         min.x = Mathf.Floor(min.x * divs) / divs;
+        min.y = Mathf.Floor(min.y * divs) / divs;
         min.z = Mathf.Floor(min.z * divs) / divs;
-        MonoBehaviour.print("Min: " + min.ToString());
-        MonoBehaviour.print("Inc: " + increment.ToString("f4"));
-        foreach (var kvp in VAME_Manager.gcdPathLines)
+        min -= Vector3.one * increment;
+
+        max.x = Mathf.Ceil(max.x * divs) / divs;
+        max.y = Mathf.Ceil(max.y * divs) / divs;
+        max.z = Mathf.Ceil(max.z * divs) / divs;
+        max += Vector3.one * increment;
+        foreach (var kvp in VAME_Manager.pathLines)
         {
-            sloxelCenters.Add(kvp.Key, new List<Vector3>());
             for (var x = min.x; x <= max.x; x += increment)
             {
                 for (var z = min.z; z <= max.z; z += increment)
                 {
                     if (CheckForSloxel(kvp.Key, new Vector2(x, z)))
                     {
-                        if (!sloxelCenters.ContainsKey(kvp.Key))
+                        if (!sloxels.ContainsKey(kvp.Key))
                         {
-                            sloxelCenters.Add(kvp.Key, new List<Vector3>());
+                            sloxels.Add(kvp.Key, new List<Sloxel>());
                         }
                         var newPt = new Vector3(x, kvp.Key, z);
-                        if (!sloxelCenters[kvp.Key].Contains(newPt))
+                        var _pathLines = GatherPathLines(newPt, kvp.Key, increment);
+                        var newSloxel = new Sloxel(newPt, _pathLines, increment);
+                        if (!sloxels[kvp.Key].Contains(newSloxel))
                         {
-                            sloxelCenters[kvp.Key].Add(newPt);
-                            MonoBehaviour.print(newPt.ToString("f4"));
-                            numberOfThem++;
+                            sloxels[kvp.Key].Add(newSloxel);
+                            MonoBehaviour.print("Sloxel!");
                         }
                     }
                 }
             }
         }
-        MonoBehaviour.print("Layers: " + VAME_Manager.gcdPathLines.Count);
-        MonoBehaviour.print("Number: " + numberOfThem.ToString());
+        GatherVoxels(min, max, increment);
     }
 
     public bool CheckForSloxel(float y, Vector2 xz)
@@ -182,8 +187,82 @@ public class Sloxelizer
         else return false;
     }
 
-    void CheckIt()
+    List<Vector2> GatherPathLines(Vector3 sloxelCenter, float y, float increment)
     {
+        var _pathLines = new List<Vector2>();
+        foreach (var path in VAME_Manager.pathLines[y])
+        {
+            var intersect = CheckForIntersect(path.p1, path.p2, sloxelCenter);
+            if (intersect != null)
+            {
+                if (intersect.x >= sloxelCenter.x - increment / 2 && intersect.x <= sloxelCenter.x + increment / 2
+                    && intersect.z >= sloxelCenter.z - increment / 2 && intersect.z <= sloxelCenter.z + increment / 2)
+                {
+                    _pathLines.Add(new Vector2 (y, VAME_Manager.pathLines[y].IndexOf(path)));
+                }
+            }
+        }
+        return _pathLines;
+    }
 
+    Vector3 CheckForIntersect(Vector3 p1, Vector3 p2, Vector3 pt)
+    {
+        float dx = p2.x - p1.x;
+        float dz = p2.z - p1.z;
+
+        if (dx == 0 && dz == 0)
+        {
+            return p1;
+        }
+        float t = ((pt.x - p1.x) * dx + (pt.z - p1.z) * dz) /
+        (dx * dx + dz * dz);
+
+        if (t < 0)
+        {
+            return p1;
+        }
+        else if (t > 1)
+        {
+            return p2;
+        }
+        else
+        {
+            return new Vector3(p1.x + t * dx, pt.y, p1.z + t * dz);
+        }
+    }
+
+    void GatherVoxels(Vector3 min, Vector3 max, float increment)
+    {
+        for (var y = min.y; y <= max.y; y+= increment)
+        {
+            var i = 0;
+            for (var z = min.z; z <= max.z; z += increment)
+            {
+                for (var x = min.x; x <= max.x; x += increment)
+                {
+                    var _sloxels = new List<Sloxel>();
+                    foreach (var layer in sloxels)
+                    {
+                        if (layer.Key >= y - increment / 2 && layer.Key <= y + increment / 2)
+                        {
+                            foreach (var sloxel in layer.Value)
+                            {
+                                MonoBehaviour.print(i.ToString());
+                                i++;
+                                //if (Mathf.Abs(sloxel.origin.x - x) <= 2.0f && Mathf.Abs(sloxel.origin.z - z) <= 2.0f)
+                                //{
+                                //    _sloxels.Add(sloxel);
+                                //}
+                            }
+                        }
+                    }
+                    if (_sloxels.Count > 0)
+                    {
+                        var v = new Voxel(_sloxels, new Vector3(x, y, z), Vector3.one * increment);
+                        voxels.Add(v);
+                    }
+                }
+            }
+        }
     }
 }

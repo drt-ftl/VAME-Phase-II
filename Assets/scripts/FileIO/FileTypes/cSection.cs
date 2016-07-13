@@ -7,8 +7,10 @@ using System.IO;
 public class cSection : MonoBehaviour
 {
     public static cSection instance;
-    public static List<List<PathLine>> cSections = new List<List<PathLine>>();
+    public static List<List<PathLine>> cSectionsX = new List<List<PathLine>>();
     public static List<List<PathLine>> cSectionsY = new List<List<PathLine>>();
+    public static List<List<PathLine>> cSectionsZ = new List<List<PathLine>>();
+    public static Dictionary<float, List<PathLine>> cSectionsGCD = new Dictionary<float, List<PathLine>>();
 
     void Awake()
     {
@@ -16,80 +18,31 @@ public class cSection : MonoBehaviour
     }
 
     List<PathLine> lines = new List<PathLine>();
-    //public void SaveSlice(float height)
-    //{
-    //    var saveD = new SaveFileDialog();
-    //    saveD.InitialDirectory = UnityEngine.Application.dataPath + "/Models";
-    //    saveD.Filter = "Text Files (*.txt)|*.txt";
-    //    saveD.RestoreDirectory = false;
-    //    saveD.ShowDialog();
-    //    if (saveD.FileName != "")
-    //    {
-    //        SliceIt(height);
-    //        #region saveIt        
-    //        StreamWriter w = File.CreateText(saveD.FileName);
-    //        w.WriteLine(saveD.FileName);
-    //        w.WriteLine("X,Y,Z");
-    //        foreach (var line in lines)
-    //        {
-    //            w.WriteLine(line.p1.x.ToString("f6") + "," + line.p1.y.ToString("f6") + "," + line.p1.z.ToString("f6"));
-    //            w.WriteLine(line.p2.x.ToString("f6") + "," + line.p2.y.ToString("f6") + "," + line.p2.z.ToString("f6"));
-    //        }
-    //        w.Close();
-    //    }
-    //    #endregion
-    //}
-
-    //public void SaveSlices(float min, float max, float increment)
-    //{
-    //    var saveD = new SaveFileDialog();
-    //    saveD.InitialDirectory = UnityEngine.Application.dataPath + "/Models";
-    //    saveD.Filter = "Text Files (*.txt)|*.txt";
-    //    saveD.RestoreDirectory = false;
-    //    saveD.ShowDialog();
-    //    if (saveD.FileName != "")
-    //    {
-    //        for (float height = min; height <= max; height += increment)
-    //        {
-    //            SliceIt(height);
-    //            #region saveIt
-
-    //            StreamWriter w = File.CreateText(saveD.FileName + "_Height_" + height.ToString("f6") + ".txt");
-    //            w.WriteLine(saveD.FileName);
-    //            w.WriteLine("X,Y,Z");
-
-    //            foreach (var line in lines)
-    //            {
-    //                w.WriteLine(line.p1.x.ToString("f6") + "," + line.p1.y.ToString("f6") + "," + line.p1.z.ToString("f6"));
-    //                w.WriteLine(line.p2.x.ToString("f6") + "," + line.p2.y.ToString("f6") + "," + line.p2.z.ToString("f6"));
-    //            }
-    //            w.Close();
-    //        }
-    //    }
-    //    #endregion
-    //}
 
     public void DoSlices(float divisions)
     {
-        cSections.Clear();
+        cSectionsX.Clear();
+        cSectionsY.Clear();
+        cSectionsZ.Clear();
+        cSectionsGCD.Clear();
 
         var _tmpMin = VAME_Manager.Min;
         var minX = Mathf.Floor(_tmpMin.x * divisions) / divisions;
         var minY = Mathf.Floor(_tmpMin.y * divisions) / divisions;
         var minZ = Mathf.Floor(_tmpMin.z * divisions) / divisions;
         var increment = 4.0f / divisions;
+
         for (float height = minY; height <= VAME_Manager.Max.y; height += increment)
         {
             SliceItY(height);
             var newList = new List<PathLine>();
             foreach (var line in lines)
             {
-                newList.Add(new PathLine(line.p1, line.p2));                
+                newList.Add(new PathLine(line.p1, line.p2));
             }
-            cSections.Add(newList);
             cSectionsY.Add(newList);
         }
- 
+
         for (float height = minX; height <= VAME_Manager.Max.x; height += increment)
         {
             SliceItX(height);
@@ -98,7 +51,7 @@ public class cSection : MonoBehaviour
             {
                 newList.Add(new PathLine(line.p1, line.p2));
             }
-            cSections.Add(newList);
+            cSectionsX.Add(newList);
         }
 
         for (float height = minZ; height <= VAME_Manager.Max.z; height += increment)
@@ -109,7 +62,21 @@ public class cSection : MonoBehaviour
             {
                 newList.Add(new PathLine(line.p1, line.p2));
             }
-            cSections.Add(newList);
+            cSectionsZ.Add(newList);
+        }
+    }
+
+    public void SliceItGCD ()
+    {
+        foreach (var list in VAME_Manager.pathLines)
+        {
+            SliceItY(list.Key);
+            var newList = new List<PathLine>();
+            foreach (var line in lines)
+            {
+                newList.Add(new PathLine(line.p1, line.p2));
+            }
+            cSectionsGCD.Add(list.Key, newList);
         }
     }
 

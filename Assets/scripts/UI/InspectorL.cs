@@ -87,31 +87,24 @@ public class InspectorL : MonoBehaviour
 
     public void slideVisibility()
     {
-        switch (_mode)
+        modelVisibility = visibiltySlider.value;
+        foreach (var m in VAME_Manager.Meshes)
         {
-            case Mode.model:
-                modelVisibility = visibiltySlider.value;
-                foreach (var m in VAME_Manager.Meshes)
-                {
-                    var rndMat = m.GetComponent<MeshRenderer>().material;
-                    var c = rndMat.color;
-                    c.a = visibiltySlider.value;
-                    rndMat.color = c;
-                    c = rndMat.GetColor("_SpecColor");
-                    c *= visibiltySlider.value;
-                    rndMat.SetColor("_SpecColor", c);
-                }
-                break;
-            case Mode.paths:
-                modelVisibility = visibiltySlider.value;
-                var col = VAME_Manager.instance.glMat.color;
-                col.a = visibiltySlider.value;
-                break;
-            case Mode.points:
-                break;
-            default:
-                break;
+            var rndMat = m.GetComponent<MeshRenderer>().material;
+            var c = rndMat.color;
+            c.a = visibiltySlider.value;
+            rndMat.color = c;
+            c = rndMat.GetColor("_SpecColor");
+            c *= visibiltySlider.value;
+            rndMat.SetColor("_SpecColor", c);
+            visibiltySlider.gameObject.GetComponentInChildren<Text>().text = "Visibility: " + (visibiltySlider.value * 100).ToString("f0") + "%";
         }
+    }
+
+    public void slidePathVisibility()
+    {
+        pathVisibility = pathVisibiltySlider.value;
+        pathVisibiltySlider.gameObject.GetComponentInChildren<Text>().text = "Visibility: " + (pathVisibiltySlider.value * 100).ToString("f0") + "%";
     }
 
     public void ScrollCode()
