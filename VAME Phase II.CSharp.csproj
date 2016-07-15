@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Assets\CameraView.cs" />
     <Compile Include="Assets\GUI_3D.cs" />
+    <Compile Include="Assets\TESTS\TestScript.cs" />
     <Compile Include="Assets\VoxelInspector.cs" />
     <Compile Include="Assets\YesNoCancelDialog.cs" />
     <Compile Include="Assets\scenes\GcdInterpreter.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Assets\scripts\FileIO\FileTypes\Splitter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\Triangle.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\cSection.cs" />
+    <Compile Include="Assets\scripts\FileIO\FileTypes\ccatInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\gcdInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\objInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\stlInterpreter.cs" />

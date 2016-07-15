@@ -45,15 +45,17 @@ public class gcdInterpreter
                 var index = VAME_Manager.pathPoints[list.Key].IndexOf(v1);
                 if (index <= 0)
                     continue;
-                //if (!LaserOnModelRef[index]) continue;
                 var v0 = VAME_Manager.pathPoints[list.Key][index - 1];
                 var newSegment = new PathLine(v0, v1);
+                if (v0.y != v1.y)
+                    newSegment.Show = false;
                 if (!VAME_Manager.pathLines.ContainsKey(list.Key))
                 {
                     VAME_Manager.pathLines.Add(list.Key, new List<PathLine>());
                 }
                 VAME_Manager.pathLines[list.Key].Add(newSegment);
             }
+            
         }
 
     }
@@ -74,17 +76,17 @@ public class gcdInterpreter
                 }
                 break;
             case 'O':
-                //if (chunks[0][1] == 'U')
-                //{
-                //    if (chunks.Length > 1 && chunks[1].Contains(","))
-                //    {
-                //        var command = chunks[1].Split(',');
-                //        if (command[1] == "0")
-                //            LaserOn = false;
-                //        else LaserOn = true;
-                //    }
-                //}
-                //    gcdInterpreter.StartsWithO(_line);
+                if (chunks[0][1] == 'U')
+                {
+                    if (chunks.Length > 1 && chunks[1].Contains(","))
+                    {
+                        var command = chunks[1].Split(',');
+                        if (command[1] == "0")
+                            LaserOn = false;
+                        else LaserOn = true;
+                    }
+                }
+                //gcdInterpreter.StartsWithOU(_line);
                 break;
             default:
                 break;

@@ -25,6 +25,8 @@ public class VAME_Manager : MonoBehaviour
     private Vector3 screenCenter;
     public Material glMat;
     public GameObject ball;
+    public GameObject crazyBall;
+    public Transform pointParent;
     public Transform voxelHolder;
     public Slider resolution;
 
@@ -73,10 +75,13 @@ public class VAME_Manager : MonoBehaviour
         {
             foreach (var line in list.Value)
             {
-                var p1 = (line.p1);
-                var p2 = (line.p2);
-                GL.Vertex(p1);
-                GL.Vertex(p2);
+                if (line.Show)
+                {
+                    var p1 = (line.p1);
+                    var p2 = (line.p2);
+                    GL.Vertex(p1);
+                    GL.Vertex(p2);
+                }
             }
         }
         GL.End();
@@ -307,6 +312,19 @@ public class VAME_Manager : MonoBehaviour
         }
     }
 
+    public void CrazyBalls()
+    {
+        var size = ccatInterpreter.instance.MaxVector - ccatInterpreter.instance.MinVector;
+        var centroid = (ccatInterpreter.instance.MaxVector + ccatInterpreter.instance.MinVector) / 2f;
+        var max = Mathf.Max(size.x, size.y, size.z);
+        var scale = 4.0f / max;
+        foreach (var point in ccatInterpreter.instance.points)
+        {
+            var cb = Instantiate(crazyBall, point.Position * scale, Quaternion.identity) as GameObject;
+            cb.transform.SetParent(pointParent);
+        }
+        pointParent.position -= centroid * scale;
+    }
     public void ResolutionChanged()
     {
         var res = resolution.value;

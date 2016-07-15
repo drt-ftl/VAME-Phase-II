@@ -338,8 +338,10 @@ public class PathLine
     {
         p1 = _p1;
         p2 = _p2;
+        Show = true;
     }
     public Vector3 p1 { get; set; }
     public Vector3 p2 { get; set; }
+    public bool Show { get; set; }
 }
 

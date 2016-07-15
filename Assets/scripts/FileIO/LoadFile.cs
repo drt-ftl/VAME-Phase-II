@@ -11,6 +11,7 @@ public class LoadFile
         ofd.InitialDirectory = UnityEngine.Application.dataPath + "/Models";
         ofd.Filter = "Model Files (*.stl, *.obj) | *.stl";// ;*.STL;*.obj;*.OBJ";
         ofd.Filter += " | Path Files (*.gcd) | *.gcd";
+        ofd.Filter += " | CCAT Files (*.cct) | *.cct";
         if (ofd.ShowDialog() == DialogResult.OK)
         {
             var n = ofd.FileName;
@@ -31,6 +32,13 @@ public class LoadFile
                 VAME_Manager.instance.ClearPaths();
                 var i = new gcdInterpreter(n);
                 VAME_Manager._type = VAME_Manager.type.paths;
+            }
+            else if (n.ToLower().EndsWith(".cct"))
+            {
+                //VAME_Manager.instance.ClearPaths();
+                MonoBehaviour.print("CCAT!");
+                var i = new ccatInterpreter(n);
+                VAME_Manager._type = VAME_Manager.type.points;
             }
         }
     }
