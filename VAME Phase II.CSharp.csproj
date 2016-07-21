@@ -79,13 +79,95 @@
     <Reference Include="Vectrosity">
       <HintPath>Assets\Plugins\Vectrosity\Vectrosity.dll</HintPath>
     </Reference>
+    <Reference Include="MakarovDev.ExpandCollapsePanel">
+      <HintPath>Assets\Forms\SlicerForm\bin\Debug\MakarovDev.ExpandCollapsePanel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>Assets\Forms\SlicerForm\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>Assets\Forms\SlicerForm\System.Drawing.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CameraView.cs" />
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\CCAT_E.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CCAT_E.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\CCAT_E.cs" />
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Program.cs" />
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\AssemblyInfo.cs" />
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\Settings.Designer.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup\ColorSlider.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup\Form1.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup\ValueChangedEventArgs.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup\ValueChangedHandler.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\AddNewColorSwatchForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorConverter.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorFieldPanel.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorPanel.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorRenderingHelper.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSelectedEventArgs.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpace.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponent.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponentEventHandler.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponentTextBox.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceEventHandler.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatch.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchPanel.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchSelectedHandler.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchXml.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ComponentUnit.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\DragForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\HSB.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\HexTextBox.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\HsbColorSpace.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\IColorSpaceStructure.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\RGB.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\RgbColorSpace.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\Caret.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\Gdi32.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\HitTestValues.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\ImageManipulation.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\ImageManipulationException.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\RasterOperationCodes.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\Resources.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\ShowWindowMessages.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\User32.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\Window.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup2\WindowsMessages.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup3\AboutForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup3\MainForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Program.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Properties\AssemblyInfo.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Properties\Settings.Designer.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\SlicerForm.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SlicerForm.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\SlicerForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="Assets\GUI_3D.cs" />
+    <Compile Include="Assets\TESTS\ExampleClass.cs" />
     <Compile Include="Assets\TESTS\TestScript.cs" />
     <Compile Include="Assets\VoxelInspector.cs" />
     <Compile Include="Assets\YesNoCancelDialog.cs" />
+    <Compile Include="Assets\ccatBall.cs" />
     <Compile Include="Assets\scenes\GcdInterpreter.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\RectTransformExtensions.cs" />
     <Compile Include="Assets\scripts\FileIO\FileTypes\Splitter.cs" />
@@ -109,6 +191,29 @@
     <Compile Include="Assets\scripts\VAME_Manager.cs" />
     <Compile Include="Assets\scripts\VAMEentities\model.cs" />
     <Compile Include="Assets\testLoader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Forms\SlicerForm\Backup1\ColorSwatches.xml" />
+    <None Include="Assets\Forms\SlicerForm\bin\Debug\CustomSwatches.xml" />
+    <None Include="Assets\Forms\SlicerForm\obj\Debug\SlicerForm.csproj.FileListAbsolute.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\CCAT_E.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CCAT_E.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Forms\SlicerForm\Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Forms\SlicerForm\SlicerForm.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SlicerForm.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

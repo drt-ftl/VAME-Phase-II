@@ -73,7 +73,10 @@ public class Sloxelizer2
                             {
                                 var there = new Vector2(sl.origin.x, sl.origin.z);
                                 if (here == there)
+                                {
                                     newVoxel.Sloxels.Add(sl);
+                                    sl.Voxel = newVoxel;
+                                }
                             }
                         }
                     }
@@ -84,6 +87,11 @@ public class Sloxelizer2
                 }
             }
         }
+        if (VAME_Manager.slicerForm == null)
+        {
+            VAME_Manager.slicerForm = new SlicerForm.SlicerForm();
+        }
+        VAME_Manager.slicerForm.Show();
     }
 
     public List<Vector2> GetIntersects(Vector3 p)

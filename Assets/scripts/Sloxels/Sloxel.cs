@@ -14,4 +14,5 @@ public class Sloxel
     public Vector3 origin           { get; internal set; }
     public List<Vector2> PathLines  { get; internal set; }
     public Vector3 Scale            { get; internal set; }
+    public Voxel Voxel { get; set; }
 }

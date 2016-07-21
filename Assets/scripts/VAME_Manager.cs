@@ -37,9 +37,14 @@ public class VAME_Manager : MonoBehaviour
     public static List<string> pathsCode = new List<string>();
     public static Dictionary<float, List<PathLine>> pathLines = new Dictionary<float, List<PathLine>>();
     public static Dictionary<float, List<Vector3>> pathPoints = new Dictionary<float, List<Vector3>>();
+    public static List<GameObject> crazyBalls = new List<GameObject>();
+    public static Dictionary<float, List<GameObject>> crazyBallsByLayer = new Dictionary<float, List<GameObject>>();
+    public static List<float> pathHeights = new List<float>();
 
     public static List<Vector3> gcdLineEndpoints = new List<Vector3>();
     public static List<PathLine> pl = new List<PathLine>();
+
+    public static SlicerForm.SlicerForm slicerForm;
 
     void Start()
     {
@@ -320,10 +325,28 @@ public class VAME_Manager : MonoBehaviour
         var scale = 4.0f / max;
         foreach (var point in ccatInterpreter.instance.points)
         {
-            var cb = Instantiate(crazyBall, point.Position * scale, Quaternion.identity) as GameObject;
+            var cb = Instantiate(crazyBall, (point.Position - centroid) * scale, Quaternion.identity) as GameObject;
             cb.transform.SetParent(pointParent);
+            var layer = VAME_Manager.pathHeights[0];
+            foreach (var height in pathHeights)
+            {
+                if (Mathf.Abs((point.Position.y - centroid.y) * scale - height) < gcdInterpreter.averageHeight / 2)
+                {
+                    layer = height;
+                    break;
+                }
+            }
+            if (!crazyBallsByLayer.ContainsKey(layer))
+                crazyBallsByLayer.Add(layer, new List<GameObject>());
+            crazyBallsByLayer[layer].Add(cb);
+            crazyBalls.Add(cb);
         }
-        pointParent.position -= centroid * scale;
+        //pointParent.position -= centroid * scale;
+        foreach (var cb in crazyBalls)
+        {
+            var index = crazyBalls.IndexOf(cb);
+            cb.GetComponent<ccatBall>().Activate(index, (float)index/(float)crazyBalls.Count);
+        }
     }
     public void ResolutionChanged()
     {

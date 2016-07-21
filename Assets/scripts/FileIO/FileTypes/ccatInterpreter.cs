@@ -39,8 +39,8 @@ public class ccatInterpreter
                     if (float.TryParse(split[0], out x) && float.TryParse(split[1], out z) && float.TryParse(split[2], out y))
                     {
                         v.x = x;
-                        v.y = -z;
-                        v.z = y;
+                        v.y = y;
+                        v.z = z;
                         v /= 101600f; // Scale to inches (from turns)
                         var newPoint = new CcatDataPoint();
                         newPoint.Position = v;

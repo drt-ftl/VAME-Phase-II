@@ -15,6 +15,8 @@ public class gcdInterpreter
     private Vector3 lastPoint;
     private List<Vector3> verts = new List<Vector3>();
     int i = 0;
+    float lastEndTime = 0;
+    public static float averageHeight = 0;
 
     public gcdInterpreter(string _filename)
     {
@@ -49,15 +51,26 @@ public class gcdInterpreter
                 var newSegment = new PathLine(v0, v1);
                 if (v0.y != v1.y)
                     newSegment.Show = false;
+                newSegment.StartTime = lastEndTime;
+                var d = Vector3.Distance(v1, v0);
+                var endTime = lastEndTime + d;
+                newSegment.EndTime = endTime;
+                lastEndTime = endTime;
                 if (!VAME_Manager.pathLines.ContainsKey(list.Key))
                 {
                     VAME_Manager.pathLines.Add(list.Key, new List<PathLine>());
+                    VAME_Manager.pathHeights.Add(list.Key);                   
                 }
                 VAME_Manager.pathLines[list.Key].Add(newSegment);
-            }
-            
+            }            
         }
-
+        foreach (var h in VAME_Manager.pathHeights)
+        {
+            var index = VAME_Manager.pathHeights.IndexOf(h);
+            if (index == 0) continue;
+            averageHeight += h - VAME_Manager.pathHeights[index - 1];
+        }
+        averageHeight /= VAME_Manager.pathPoints.Count;
     }
 
     void scanGCD(string _line)

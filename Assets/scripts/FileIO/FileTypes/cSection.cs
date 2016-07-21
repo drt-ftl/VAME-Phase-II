@@ -343,5 +343,7 @@ public class PathLine
     public Vector3 p1 { get; set; }
     public Vector3 p2 { get; set; }
     public bool Show { get; set; }
+    public float StartTime { get; set; }
+    public float EndTime { get; set; }
 }
 
