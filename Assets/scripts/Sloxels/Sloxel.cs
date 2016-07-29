@@ -9,10 +9,12 @@ public class Sloxel
         origin = _origin;
         PathLines = new List<Vector2>(_pathLines);
         Scale = new Vector3(increment, 0.1f, increment);
+        ccatBalls = new List<GameObject>();
     }
 
     public Vector3 origin           { get; internal set; }
     public List<Vector2> PathLines  { get; internal set; }
+    public List<GameObject> ccatBalls { get; set; }
     public Vector3 Scale            { get; internal set; }
     public Voxel Voxel { get; set; }
 }

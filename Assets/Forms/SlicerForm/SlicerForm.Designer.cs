@@ -44,6 +44,8 @@ namespace SlicerForm
             this.ByGcdLayers = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.comboBox_ccatMode = new System.Windows.Forms.ComboBox();
+            this.ShowBalls = new System.Windows.Forms.CheckBox();
             this.Play = new System.Windows.Forms.Button();
             this.wtLabel = new System.Windows.Forms.Label();
             this.wtSlider = new System.Windows.Forms.TrackBar();
@@ -52,7 +54,9 @@ namespace SlicerForm
             this.ShowCsection = new System.Windows.Forms.CheckBox();
             this.SloxelUpDown = new System.Windows.Forms.NumericUpDown();
             this.LayerUpDown = new System.Windows.Forms.NumericUpDown();
-            this.ShowBalls = new System.Windows.Forms.CheckBox();
+            this.color_realTime = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.selectBy = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.SloxelNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LayerTrackbar)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -219,6 +223,10 @@ namespace SlicerForm
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.selectBy);
+            this.groupBox1.Controls.Add(this.color_realTime);
+            this.groupBox1.Controls.Add(this.comboBox_ccatMode);
             this.groupBox1.Controls.Add(this.ShowBalls);
             this.groupBox1.Controls.Add(this.Play);
             this.groupBox1.Controls.Add(this.wtLabel);
@@ -246,6 +254,39 @@ namespace SlicerForm
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Slice Parameters";
+            // 
+            // comboBox_ccatMode
+            // 
+            this.comboBox_ccatMode.DisplayMember = "0";
+            this.comboBox_ccatMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_ccatMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox_ccatMode.FormattingEnabled = true;
+            this.comboBox_ccatMode.Items.AddRange(new object[] {
+            "None",
+            "Distance Error",
+            "Time Error",
+            "Temperature"});
+            this.comboBox_ccatMode.Location = new System.Drawing.Point(9, 275);
+            this.comboBox_ccatMode.Name = "comboBox_ccatMode";
+            this.comboBox_ccatMode.Size = new System.Drawing.Size(97, 20);
+            this.comboBox_ccatMode.TabIndex = 22;
+            this.comboBox_ccatMode.ValueMember = "0";
+            this.comboBox_ccatMode.SelectedIndexChanged += new System.EventHandler(this.comboBox_ccatMode_SelectedIndexChanged);
+            // 
+            // ShowBalls
+            // 
+            this.ShowBalls.AutoSize = true;
+            this.ShowBalls.Checked = true;
+            this.ShowBalls.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowBalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShowBalls.Location = new System.Drawing.Point(270, 355);
+            this.ShowBalls.Name = "ShowBalls";
+            this.ShowBalls.Size = new System.Drawing.Size(46, 14);
+            this.ShowBalls.TabIndex = 21;
+            this.ShowBalls.Text = "CCAT";
+            this.ShowBalls.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.ShowBalls.UseVisualStyleBackColor = true;
+            this.ShowBalls.CheckedChanged += new System.EventHandler(this.ShowBalls_CheckedChanged);
             // 
             // Play
             // 
@@ -345,20 +386,43 @@ namespace SlicerForm
             this.LayerUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.LayerUpDown.ValueChanged += new System.EventHandler(this.LayerUpDown_ValueChanged);
             // 
-            // ShowBalls
+            // color_realTime
             // 
-            this.ShowBalls.AutoSize = true;
-            this.ShowBalls.Checked = true;
-            this.ShowBalls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowBalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShowBalls.Location = new System.Drawing.Point(270, 355);
-            this.ShowBalls.Name = "ShowBalls";
-            this.ShowBalls.Size = new System.Drawing.Size(46, 14);
-            this.ShowBalls.TabIndex = 21;
-            this.ShowBalls.Text = "CCAT";
-            this.ShowBalls.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.ShowBalls.UseVisualStyleBackColor = true;
-            this.ShowBalls.CheckedChanged += new System.EventHandler(this.ShowBalls_CheckedChanged);
+            this.color_realTime.AutoSize = true;
+            this.color_realTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.color_realTime.Location = new System.Drawing.Point(9, 263);
+            this.color_realTime.Name = "color_realTime";
+            this.color_realTime.Size = new System.Drawing.Size(91, 9);
+            this.color_realTime.TabIndex = 23;
+            this.color_realTime.Text = "Color RealTime Data By:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(9, 216);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(39, 9);
+            this.label3.TabIndex = 25;
+            this.label3.Text = "Select By:";
+            // 
+            // selectBy
+            // 
+            this.selectBy.DisplayMember = "0";
+            this.selectBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.selectBy.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectBy.FormattingEnabled = true;
+            this.selectBy.Items.AddRange(new object[] {
+            "None",
+            "Sloxel",
+            "Path Line",
+            "RelTime Data Point"});
+            this.selectBy.Location = new System.Drawing.Point(9, 228);
+            this.selectBy.Name = "selectBy";
+            this.selectBy.Size = new System.Drawing.Size(97, 20);
+            this.selectBy.TabIndex = 24;
+            this.selectBy.ValueMember = "0";
+            this.selectBy.SelectedIndexChanged += new System.EventHandler(this.selectBy_SelectedIndexChanged);
             // 
             // SlicerForm
             // 
@@ -405,6 +469,10 @@ namespace SlicerForm
         public System.Windows.Forms.TrackBar wtSlider;
         public System.Windows.Forms.Button Play;
         public System.Windows.Forms.CheckBox ShowBalls;
+        private System.Windows.Forms.ComboBox comboBox_ccatMode;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox selectBy;
+        private System.Windows.Forms.Label color_realTime;
     }
 }
 

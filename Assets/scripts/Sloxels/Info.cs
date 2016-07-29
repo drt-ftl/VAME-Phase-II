@@ -20,35 +20,50 @@ public class Info : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (!activated) return;
-        gameObject.GetComponent<Renderer>().material = VoxelInspector.instance.selected;
-        txt = "";
-        foreach (var sloxel in voxel.Sloxels)
-        {
-            foreach (var v2 in sloxel.PathLines)
-            {
-                txt += "Line[" + v2.x.ToString("f4") + "][" + v2.y.ToString("f0") + "]\n";
-            }
-        }
+        SelectVoxel(true);
     }
 
     void OnMouseOver()
     {
-        txt = "";
-        foreach (var sloxel in voxel.Sloxels)
-        {
-            foreach (var v2 in sloxel.PathLines)
-            {
-                txt += "Line[" + v2.x.ToString("f4") + "][" + v2.y.ToString("f0") + "]\n";
-            }
-        }
-        VoxelInspector.instance.SetScrollText(txt);
+        if (this == VAME_Manager.instance.selectedVoxelInfo) return;
         gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.highlight;
     }
 
     void OnMouseExit()
     {
+        if (this == VAME_Manager.instance.selectedVoxelInfo) return;
         gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.standard;
+    }
+
+    public void SelectVoxel(bool directClick)
+    {
+        if (!activated) return;
+        if (VAME_Manager.instance.selectedVoxelInfo != null)
+        {
+            VAME_Manager.instance.selectedVoxelInfo.gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.standard;
+        }
+        VAME_Manager.instance.selectedVoxelInfo = this;
+        var h = voxel.Sloxels[0].origin.y;
+        var ind = VAME_Manager.pathHeights.IndexOf(h);
+        if (directClick)
+            VAME_Manager.slicerForm.ChangeLayer(ind, voxel);
+        gameObject.GetComponent<Renderer>().material = VoxelInspector.instance.selected;
+        txt = "";
+        txt += "Voxel ID: " + Sloxelizer2.instance.voxels.IndexOf(voxel) + "\n\n";
+        txt += "Contains " + voxel.Sloxels.Count.ToString() + " Voxels" + "\n";
+        var i = 1;
+        foreach (var sloxel in voxel.Sloxels)
+        {
+            var ht = sloxel.origin.y;
+            txt += i.ToString() + ". " + "Sloxel[" + ht.ToString("f3") + "][" + Sloxelizer2.instance.sloxels[ht].IndexOf(sloxel).ToString() + "] \n";
+            txt += "Containing " + sloxel.PathLines.Count.ToString() + " Path(s)\n";
+            foreach (var v2 in sloxel.PathLines)
+            {
+                txt += "Path[" + v2.x.ToString("f3") + "][" + v2.y.ToString("f0") + "]\n";
+            }
+            i++;
+        }
+        VoxelInspector.instance.SetScrollText(txt);
     }
 
     #region Cube

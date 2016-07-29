@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.3.5f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -96,7 +98,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CCAT_E.resx</DependentUpon>
     </Compile>
-    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\CCAT_E.cs" />
+    <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\CCAT_E.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Program.cs" />
     <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\AssemblyInfo.cs" />
     <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\Resources.Designer.cs">
@@ -105,33 +109,59 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Assets\Forms\CCAT_Explorer\CCAT_Explorer\CCAT_Explorer\Properties\Settings.Designer.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup\ColorSlider.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup\Form1.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup\ColorSlider.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Backup\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup\ValueChangedEventArgs.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup\ValueChangedHandler.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\AddNewColorSwatchForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\AddNewColorSwatchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorConverter.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorFieldPanel.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorPanel.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorFieldPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorRenderingHelper.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSelectedEventArgs.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpace.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponent.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpace.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponentEventHandler.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponentTextBox.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceComponentTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSpaceEventHandler.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatch.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchPanel.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchSelectedHandler.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ColorSwatchXml.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup1\ComponentUnit.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\DragForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\DragForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\HSB.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\HexTextBox.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\HsbColorSpace.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\HexTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\HsbColorSpace.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup1\IColorSpaceStructure.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup1\RGB.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup1\RgbColorSpace.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup1\RgbColorSpace.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Backup2\Caret.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup2\Gdi32.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup2\HitTestValues.cs" />
@@ -143,8 +173,12 @@
     <Compile Include="Assets\Forms\SlicerForm\Backup2\User32.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup2\Window.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Backup2\WindowsMessages.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup3\AboutForm.cs" />
-    <Compile Include="Assets\Forms\SlicerForm\Backup3\MainForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\Backup3\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Assets\Forms\SlicerForm\Backup3\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\Program.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Properties\AssemblyInfo.cs" />
     <Compile Include="Assets\Forms\SlicerForm\Properties\Resources.Designer.cs">
@@ -158,7 +192,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SlicerForm.resx</DependentUpon>
     </Compile>
-    <Compile Include="Assets\Forms\SlicerForm\SlicerForm.cs" />
+    <Compile Include="Assets\Forms\SlicerForm\SlicerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />

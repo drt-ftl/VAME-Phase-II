@@ -47,6 +47,8 @@ public class objInterpreter
             VAME_Manager.triangleList.Add(t);
         }
         VAME_Manager.instance.Generate();
+        if (VAME_Manager.slicerForm != null)
+            VAME_Manager.slicerForm.panel1.Invalidate();
     }
 
     public Vector3 Normal(Vector3 p1, Vector3 p2, Vector3 p3)

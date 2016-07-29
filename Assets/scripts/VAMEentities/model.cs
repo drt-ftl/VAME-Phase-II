@@ -5,11 +5,16 @@ using System.Collections.Generic;
 public class model : MonoBehaviour
 {
     private Mesh mesh;
-    public static List<int> tris = new List<int>();
-    public static List<Vector3> verts = new List<Vector3>();
-    public static List<Vector3> normals = new List<Vector3>();
-    private List<Color> colors = new List<Color>();
-    private List<Vector2> uvs = new List<Vector2>();
+    [HideInInspector]
+    public List<int> tris = new List<int>();
+    [HideInInspector]
+    public List<Vector3> verts = new List<Vector3>();
+    [HideInInspector]
+    public List<Vector3> normals = new List<Vector3>();
+    [HideInInspector]
+    public List<Color> colors = new List<Color>();
+    [HideInInspector]
+    public List<Vector2> uvs = new List<Vector2>();
     bool GO = false;
     int d = 0;
     public List<Material> materials = new List<Material>();

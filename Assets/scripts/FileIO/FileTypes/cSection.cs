@@ -64,6 +64,7 @@ public class cSection : MonoBehaviour
             }
             cSectionsZ.Add(newList);
         }
+        
     }
 
     public void SliceItGCD ()
@@ -339,11 +340,16 @@ public class PathLine
         p1 = _p1;
         p2 = _p2;
         Show = true;
+        Color = VAME_Manager.instance.pathColor;
+        ccatBalls = new List<GameObject>();
     }
     public Vector3 p1 { get; set; }
     public Vector3 p2 { get; set; }
     public bool Show { get; set; }
     public float StartTime { get; set; }
     public float EndTime { get; set; }
+    public Color Color { get; set; }
+    public Sloxel Sloxel {get;set;}
+    public List<GameObject> ccatBalls { get; set; }
 }
 

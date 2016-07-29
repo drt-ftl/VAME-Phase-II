@@ -20,6 +20,8 @@ public class stlInterpreter
         if (CheckForStlBinary(_filename))
             Parse_StlBinary(_filename);
         else ParseStlAscii(_filename);
+        if (VAME_Manager.slicerForm != null)
+            VAME_Manager.slicerForm.panel1.Invalidate();
 
     }
 

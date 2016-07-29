@@ -37,6 +37,7 @@ public class gcdInterpreter
         VAME_Manager.instance.NormalizePaths();
         InspectorL.instance.btnPaths.interactable = true;
         InspectorL.instance.pathVisibiltySlider.interactable = true;
+        VAME_Manager.instance.voxelizerButton.interactable = true;
         InspectorL._mode = InspectorL.Mode.paths;
         InspectorL.instance.codeDummy.SetHeight(VAME_Manager.pathsCode.Count);
         InspectorL.instance.CodeArea(0);
@@ -71,6 +72,10 @@ public class gcdInterpreter
             averageHeight += h - VAME_Manager.pathHeights[index - 1];
         }
         averageHeight /= VAME_Manager.pathPoints.Count;
+        if (VAME_Manager.slicerForm != null)
+        {
+            VAME_Manager.slicerForm.panel1.Invalidate();
+        }
     }
 
     void scanGCD(string _line)

@@ -15,6 +15,7 @@ public class Sloxelizer2
     public Sloxelizer2(float divs)
     {
         instance = this;
+        
         cSection.instance.DoSlices(20);
         sloxels = new Dictionary<float, List<Sloxel>>();
         var min = VAME_Manager.PathsMin;
@@ -92,6 +93,7 @@ public class Sloxelizer2
             VAME_Manager.slicerForm = new SlicerForm.SlicerForm();
         }
         VAME_Manager.slicerForm.Show();
+        VAME_Manager.slicerForm.panel1.Invalidate();
     }
 
     public List<Vector2> GetIntersects(Vector3 p)
@@ -100,10 +102,13 @@ public class Sloxelizer2
         foreach (var line in VAME_Manager.pathLines[p.y])
         {
             if (CheckForIntersect(p, line.p1, line.p2))
+            {
                 pathLines.Add(new Vector2(p.y, VAME_Manager.pathLines[p.y].IndexOf(line)));
+            }
         }
         return pathLines;
     }
+
 
     public bool CheckForIntersect(Vector3 p, Vector3 p1, Vector3 p2)
     {
@@ -120,8 +125,8 @@ public class Sloxelizer2
                 {
                     return true;
                 }
-                else return false;
             }
+            else return false;
         }
 
         if (p1.z == p2.z) //              travels in z
@@ -134,8 +139,8 @@ public class Sloxelizer2
                 {
                     return true;
                 }
-                else return false;
             }
+            else return false;
         }
 
         var t = (min.x - p1.x) / line.x;
