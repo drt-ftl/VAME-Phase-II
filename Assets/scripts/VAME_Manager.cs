@@ -32,6 +32,7 @@ public class VAME_Manager : MonoBehaviour
     public Slider voxelVisibility;
     public Button voxelizerButton;
     public Info selectedVoxelInfo;
+    public GameObject yncVeil;
     public static int voxelResolution;
 
     public static List<Triangle> triangleList = new List<Triangle>();
@@ -39,14 +40,17 @@ public class VAME_Manager : MonoBehaviour
     public static List<GameObject> Meshes = new List<GameObject>();
     public static List<string> modelCode = new List<string>();
     public static List<string> pathsCode = new List<string>();
+    public static List<string> cctCode = new List<string>();
     public static Dictionary<float, List<PathLine>> pathLines = new Dictionary<float, List<PathLine>>();
     public static Dictionary<float, List<Vector3>> pathPoints = new Dictionary<float, List<Vector3>>();
     public static List<GameObject> crazyBalls = new List<GameObject>();
     public static Dictionary<float, List<GameObject>> crazyBallsByLayer = new Dictionary<float, List<GameObject>>();
     public static List<float> pathHeights = new List<float>();
 
-    public static List<Vector3> gcdLineEndpoints = new List<Vector3>();
-    public static List<PathLine> pl = new List<PathLine>();
+    public static string modelFileName ="";
+    public static string pathsFileName = "";
+    public static string cctFileName = "";
+    public static string tmpFolderName = "";
 
     public static SlicerForm.SlicerForm slicerForm;
 
@@ -135,6 +139,9 @@ public class VAME_Manager : MonoBehaviour
     {
         ClearModel();
         ClearPaths();
+        ClearVoxels();
+        ClearCCAT();
+        tmpFolderName = "";
     }
 
     public void ClearModel()
@@ -151,6 +158,7 @@ public class VAME_Manager : MonoBehaviour
         Meshes.Clear();
         modelCode.Clear();
         InspectorL.instance.btnModel.interactable = false;
+        modelFileName = "";
     }
 
     public void ClearPaths()
@@ -160,6 +168,10 @@ public class VAME_Manager : MonoBehaviour
         PathsMin = Vector3.one * 100000;
         pathPoints.Clear();
         pathLines.Clear();
+        pathsCode.Clear();
+        pathHeights.Clear();
+        pathsFileName = "";
+        InspectorL.instance.btnPaths.interactable = false;
     }
     public void ClearVoxels()
     {
@@ -170,6 +182,20 @@ public class VAME_Manager : MonoBehaviour
         }
         Sloxelizer2.instance.voxels.Clear();
         Sloxelizer2.instance.sloxels.Clear();
+    }
+
+    public void ClearCCAT()
+    {
+        if (ccatInterpreter.instance == null) return;
+        foreach (var layer in crazyBallsByLayer.Values)
+        {
+            foreach (var cb in layer)
+                Destroy(cb.gameObject);
+        }
+        crazyBalls.Clear();
+        crazyBallsByLayer.Clear();
+        cctFileName = "";
+        InspectorL.instance.btnPoints.interactable = false;
     }
 
     public void LoadFile()
@@ -192,16 +218,27 @@ public class VAME_Manager : MonoBehaviour
         YNC("Exit VAME", "Are you sure?");
     }
 
+    public void ClearSession()
+    {
+        YNC("Clear Session", "Are you sure?");
+    }
+
+    void OnApplicationQuit()
+    {
+        if (System.IO.Directory.Exists(VAME_Manager.tmpFolderName))
+            System.IO.Directory.Delete(VAME_Manager.tmpFolderName, true);
+        slicerForm.Close();
+    }
     public void Generate()
     {
         //var splitter = new Splitter();
+        if (VAME_Manager.modelCode.Count == 0) return;
         NormalizeModel();
         Redraw();
         InspectorL.instance.btnModel.interactable = true;
         InspectorL.instance.btnModel.Select();
         InspectorL.instance.tglTrans.interactable = true;
         InspectorL.instance.tglWire.interactable = true;
-        InspectorL.instance.btnModel.interactable = true;
         InspectorL.instance.visibiltySlider.interactable = true;
         InspectorL._mode = InspectorL.Mode.model;
         InspectorL.instance.codeDummy.SetHeight(modelCode.Count);
@@ -349,7 +386,7 @@ public class VAME_Manager : MonoBehaviour
             var layer = VAME_Manager.pathHeights[0];
             foreach (var height in pathHeights)
             {
-                if (Mathf.Abs((point.Position.y - centroid.y) * scale - height) < gcdInterpreter.averageHeight / 2)
+                if (Mathf.Abs((point.Position.y - centroid.y) * scale - height) < gcdInterpreter.averageHeight / 4.0f)
                 {
                     layer = height;
                     break;

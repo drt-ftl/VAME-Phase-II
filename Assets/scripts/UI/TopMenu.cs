@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using System.Collections;
 using System;
+using System.IO;
 
 public class TopMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -34,6 +35,7 @@ public class TopMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         isOpen = false;
     }
 
+    #region Save
     public void SaveFile()
     {
         var sfd = new System.Windows.Forms.SaveFileDialog();
@@ -42,64 +44,67 @@ public class TopMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             var path = sfd.FileName;
-            SaveVME(path);
+            if (path.ToLower().EndsWith(".dxf"))
+                SaveDXF(path);
+            if (path.ToLower().EndsWith(".vme"))
+                SaveVME(path);
         }
     }
 
     void SaveVME(string path)
     {
+        var del = "||VAME||";                                                                   // Split on ||VAME||
         var tw = new System.IO.StreamWriter(path);
-        tw.WriteLine("VAME_File");
-        #region MODEL
-        tw.WriteLine("MODEL BEGIN");
-        foreach (var _mesh in VAME_Manager.Meshes)
-        {
-            var mesh = _mesh.GetComponent<model>();
-            tw.WriteLine("MESH BEGIN");
-            tw.WriteLine("VertexCount|" + mesh.verts.Count.ToString());
-            tw.WriteLine("VERTICES BEGIN");
-            foreach (var p in mesh.verts)
-            {
-                tw.WriteLine(p.x.ToString("f5") + "|" + p.y.ToString("f5") + "|" + p.z.ToString("f5"));
-            }
-            tw.WriteLine("VERTICES END");
-
-            tw.WriteLine("UVS BEGIN");
-            foreach (var p in mesh.uvs)
-            {
-                tw.WriteLine(p.x.ToString("f5") + "|" + p.y.ToString("f5"));
-            }
-            tw.WriteLine("UVS END");
-
-            tw.WriteLine("NORMALS BEGIN");
-            foreach (var p in mesh.normals)
-            {
-                tw.WriteLine(p.x.ToString("f5") + "|" + p.y.ToString("f5") + "|" + p.z.ToString("f5"));
-            }
-            tw.WriteLine("NORMALS END");
-
-            tw.WriteLine("MESH END");
-        }
-        tw.WriteLine("MODEL END");
-        #endregion
-        #region PATHS
-        tw.WriteLine("PATHS BEGIN");
-        foreach (var layer in VAME_Manager.pathLines.Values)
-        {
-            foreach (var line in layer)
-            {
-                tw.WriteLine("PATH BEGIN");
-                var p1 = line.p1;
-                var p2 = line.p2;
-                tw.WriteLine(p1.x.ToString("f5") + "|" + p1.y.ToString("f5") + "|" + p1.z.ToString("f5"));
-                tw.WriteLine(p2.x.ToString("f5") + "|" + p2.y.ToString("f5") + "|" + p2.z.ToString("f5"));
-                tw.WriteLine("PATH END");
-            }
-        }
-        tw.WriteLine("PATHS END");
-        tw.WriteLine("VOXEL RESOLUTION|" + VAME_Manager.voxelResolution.ToString());
-        tw.WriteLine("VAME END");
-        #endregion
+        tw.Write("VAME_File\n");
+        var res = VAME_Manager.instance.resolution;
+        tw.WriteLine("VOXEL RESOLUTION");
+        tw.Write(del);
+        if (Sloxelizer2.instance.voxels.Count > 0)
+            tw.Write(VAME_Manager.instance.resolution.ToString());                              // Voxel Resolution = split[1]
+        else tw.Write("A");
+        tw.Write(del);
+        var modelExtension = "stl";
+        if (VAME_Manager.modelFileName.ToLower().EndsWith(".obj"))
+            modelExtension = "obj";
+        tw.Write(modelExtension);                                                               // ModelFileType = split[2]
+        tw.Write(del);
+        var sr = new StreamReader(VAME_Manager.modelFileName);                                  // Model Code = split[3];
+        tw.Write(sr.ReadToEnd());
+        sr.Close();
+        tw.Write(del);
+        sr = new StreamReader(VAME_Manager.cctFileName);                                        // CCAT Code = split[4]
+        tw.Write(sr.ReadToEnd());
+        sr.Close();
+        tw.Write(del);
+        sr = new StreamReader(VAME_Manager.pathsFileName);                                      // Paths Code = split[5]
+        tw.Write(sr.ReadToEnd());
+        sr.Close();
         tw.Close();
     }
+
+    public void SaveDXF(string path)
+    {        
+        StreamWriter w = File.CreateText(path);
+        w.WriteLine(path);
+        foreach (var layer in VAME_Manager.pathLines)
+        {
+            foreach (var line in layer.Value)
+            {
+                //var s = 0.25f;
+                //var p1 = line.p1 / s;
+                //var p2 = t.p2 / s;
+                //var p3 = t.p3 / s;
+                //w.WriteLine("facet normal " + t.norm.x + " " + t.norm.y + " " + t.norm.z);
+                //w.WriteLine("outer loop");
+                //w.WriteLine("vertex " + p1.x + " " + p1.y + " " + p1.z);
+                //w.WriteLine("vertex " + p2.x + " " + p2.y + " " + p2.z);
+                //w.WriteLine("vertex " + p3.x + " " + p3.y + " " + p3.z);
+                //w.WriteLine("endloop");
+                //w.WriteLine("endfacet");
+            }
+        }
+        w.WriteLine("endsolid");
+        w.Close();
+    }
+    #endregion
 }

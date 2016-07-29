@@ -25,6 +25,7 @@ public class ccatInterpreter
         while (!tr.EndOfStream)
         {
             var textLine = tr.ReadLine();
+            VAME_Manager.cctCode.Add(textLine + "\n");
             var split = textLine.Split(',');
             if (afterFirst)
             {
@@ -79,6 +80,8 @@ public class ccatInterpreter
         var smallStr = "";
         smallStr += points.Count.ToString() + " Points.\r\n";
         VAME_Manager.instance.CrazyBalls();
+        if (VAME_Manager.cctCode.Count > 0)
+            InspectorL.instance.btnPoints.interactable = true;
     }
     //private void UpDown_PointsPerSample_ValueChanged(object sender, EventArgs e)
     //{

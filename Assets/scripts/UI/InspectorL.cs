@@ -54,6 +54,7 @@ public class InspectorL : MonoBehaviour
     {
         visibiltySlider.value = pointVisibility;
         _mode = Mode.points;
+        CodeArea(0);
     }
 
     #endregion
@@ -117,6 +118,10 @@ public class InspectorL : MonoBehaviour
         {
             CodeArea((int)(codeArea.verticalScrollbar.value * VAME_Manager.pathsCode.Count));
         }
+        else if (_mode == Mode.points)
+        {
+            CodeArea((int)(codeArea.verticalScrollbar.value * VAME_Manager.cctCode.Count));
+        }
     }
 
     public void CodeArea(int value)
@@ -124,16 +129,23 @@ public class InspectorL : MonoBehaviour
         var str = "";
         for (int i = value; i < value + 100; i++)
         {
+            if (i == value) str += "<color=green>";
             if (_mode == Mode.model)
             {
                 if (VAME_Manager.modelCode.Count > i)
-                    str += VAME_Manager.modelCode[i];
+                    str += VAME_Manager.modelCode[i] + "\n";
             }
             else if (_mode == Mode.paths)
             {
                 if (VAME_Manager.pathsCode.Count > i)
-                    str += VAME_Manager.pathsCode[i];
+                    str += VAME_Manager.pathsCode[i] + "\n";
             }
+            else if (_mode == Mode.points)
+            {
+                if (VAME_Manager.cctCode.Count > i)
+                    str += VAME_Manager.cctCode[i];
+            }
+            if (i == value) str += "</color>";
         }
         codeText.text = str;
         if (value == 0)

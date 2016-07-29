@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
+using System.Text.RegularExpressions;
+
 
 public class LoadFile
 {
@@ -12,33 +15,99 @@ public class LoadFile
         ofd.Filter = "Model Files (*.stl, *.obj) | *.stl";// ;*.STL;*.obj;*.OBJ";
         ofd.Filter += " | Path Files (*.gcd) | *.gcd";
         ofd.Filter += " | CCAT Files (*.cct) | *.cct";
+        ofd.Filter += " | VAME Files (*.vme) | *.vme";
         if (ofd.ShowDialog() == DialogResult.OK)
         {
-            var n = ofd.FileName;
-            if (n.ToLower().EndsWith(".stl"))
+            LoadIt(ofd.FileName);
+            
+        }
+    }
+
+    public void LoadIt(string n)
+    {
+        if (n.ToLower().EndsWith(".stl"))
+        {
+            VAME_Manager.instance.ClearModel();
+            var i = new stlInterpreter(n);
+            VAME_Manager._type = VAME_Manager.type.model;
+            VAME_Manager.modelFileName = n;
+        }
+        else if (n.ToLower().EndsWith(".obj"))
+        {
+            VAME_Manager.instance.ClearModel();
+            var i = new objInterpreter(n);
+            VAME_Manager._type = VAME_Manager.type.model;
+            VAME_Manager.modelFileName = n;
+        }
+        else if (n.ToLower().EndsWith(".gcd"))
+        {
+            VAME_Manager.instance.ClearPaths();
+            var i = new gcdInterpreter(n);
+            VAME_Manager._type = VAME_Manager.type.paths;
+            VAME_Manager.pathsFileName = n;
+        }
+        else if (n.ToLower().EndsWith(".cct"))
+        {
+            //VAME_Manager.instance.ClearPaths();
+            var i = new ccatInterpreter(n);
+            VAME_Manager._type = VAME_Manager.type.points;
+            VAME_Manager.cctFileName = n;
+        }
+        else if (n.ToLower().EndsWith(".vme"))
+        {
+            var fInfo = new FileInfo(n);
+            var t = "/" + System.DateTime.UtcNow.Ticks.ToString() + "_tmp";
+            var newDir = Directory.CreateDirectory(fInfo.DirectoryName + t);
+            VAME_Manager.tmpFolderName = fInfo.DirectoryName + t;
+
+            var sr = new StreamReader(n);
+            var full = sr.ReadToEnd();
+            sr.Close();
+            var del = new string[] { "||VAME||" };
+            var split = full.Split(del, System.StringSplitOptions.None);
+            //foreach (var ddd in split)
+            //{
+            //    MonoBehaviour.print(ddd);
+            //}
+            if (split.Length > 5)
             {
-                VAME_Manager.instance.ClearModel();
-                var i = new stlInterpreter(n);
-                VAME_Manager._type = VAME_Manager.type.model;
+                var paths = split[5];
+                var pathsFileName = newDir.FullName + "/paths.gcd";
+                StreamWriter psr = File.CreateText(pathsFileName);
+                psr.Write(paths);
+                psr.Close();
+                LoadIt(pathsFileName);
             }
-            else if (n.ToLower().EndsWith(".obj"))
+            if (split.Length > 3)
             {
-                VAME_Manager.instance.ClearModel();
-                var i = new objInterpreter(n);
-                VAME_Manager._type = VAME_Manager.type.model;
+                var cct = split[4];
+                var ccatFileName = newDir.FullName + "/ccat.cct";
+                StreamWriter csr = File.CreateText(ccatFileName);
+                csr.Write(cct);
+                csr.Close();
+                LoadIt(ccatFileName);
             }
-            else if (n.ToLower().EndsWith(".gcd"))
+            if (split.Length > 2)
             {
-                VAME_Manager.instance.ClearPaths();
-                var i = new gcdInterpreter(n);
-                VAME_Manager._type = VAME_Manager.type.paths;
+                var model = split[3];
+                var modelExtension = "." + split[2];
+                var modelFileName = newDir.FullName + "/model" + modelExtension;
+                StreamWriter msr = File.CreateText(modelFileName);
+                msr.Write(model);
+                msr.Close();
+                LoadIt(modelFileName);
             }
-            else if (n.ToLower().EndsWith(".cct"))
+
+            if (split.Length > 0)
             {
-                //VAME_Manager.instance.ClearPaths();
-                MonoBehaviour.print("CCAT!");
-                var i = new ccatInterpreter(n);
-                VAME_Manager._type = VAME_Manager.type.points;
+                int res = 0;
+                int.TryParse(split[1], out res);
+                if (res > 0)
+                { 
+                    VAME_Manager.instance.resolution.value = res;
+                    VAME_Manager.instance.ResolutionChanged();
+                    VAME_Manager.instance.DoSloxels();
+                }
             }
         }
     }

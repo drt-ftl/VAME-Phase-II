@@ -179,6 +179,7 @@ public class stlInterpreter
                 VAME_Manager.modelCode.Add(_line);
             }
         }
+        reader.Close();
         foreach (var l in VAME_Manager.modelCode)
         {
             scanSTL(l);

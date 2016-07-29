@@ -8,6 +8,7 @@ using System.IO;
 
 public class gcdInterpreter
 {
+    public gcdInterpreter instance;
     public static float y = 0;
     public Vector3 Min { get; set; }
     public Vector3 Max { get; set; }
@@ -20,6 +21,7 @@ public class gcdInterpreter
 
     public gcdInterpreter(string _filename)
     {
+        instance = this;
         y = 0;
         Min = Vector3.one * 10000;
         Max = Vector3.one * -10000;
@@ -30,8 +32,10 @@ public class gcdInterpreter
         while (!reader.EndOfStream)
         {
             var s = reader.ReadLine();
+            VAME_Manager.pathsCode.Add(s);
             scanGCD(s);
         }
+        if (VAME_Manager.pathsCode.Count == 0) return;
         VAME_Manager.PathsMax = Max;
         VAME_Manager.PathsMin = Min;
         VAME_Manager.instance.NormalizePaths();
