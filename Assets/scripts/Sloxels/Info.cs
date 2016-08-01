@@ -18,6 +18,19 @@ public class Info : MonoBehaviour
         activated = true;
     }
 
+    public void SetActive(bool active)
+    {
+        if (active)
+        {
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Collider>().enabled = true;
+        }
+        else
+        {
+            GetComponent<Renderer>().enabled = false;
+            GetComponent<Collider>().enabled = false;
+        }
+    }
     void OnMouseDown()
     {
         SelectVoxel(true);

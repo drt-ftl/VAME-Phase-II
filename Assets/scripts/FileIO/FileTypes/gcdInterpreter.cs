@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using UnityEngine;
 using System.IO;
+using UnityEngine.UI;
 
 public class gcdInterpreter
 {
@@ -32,7 +33,7 @@ public class gcdInterpreter
         while (!reader.EndOfStream)
         {
             var s = reader.ReadLine();
-            VAME_Manager.pathsCode.Add(s);
+            //VAME_Manager.pathsCode.Add(s);
             scanGCD(s);
         }
         if (VAME_Manager.pathsCode.Count == 0) return;
@@ -45,14 +46,18 @@ public class gcdInterpreter
         InspectorL._mode = InspectorL.Mode.paths;
         InspectorL.instance.codeDummy.SetHeight(VAME_Manager.pathsCode.Count);
         InspectorL.instance.CodeArea(0);
+        VAME_Manager.MinLayerToShow = 10000f;
+        VAME_Manager.MaxLayerToShow = -VAME_Manager.MaxLayerToShow;
         foreach (var list in VAME_Manager.pathPoints)
         {
-            foreach (var v1 in list.Value)
+            foreach (var pp in list.Value)
             {
-                var index = VAME_Manager.pathPoints[list.Key].IndexOf(v1);
+                var v1 = pp.pp;
+                var index = VAME_Manager.pathPoints[list.Key].IndexOf(pp);
                 if (index <= 0)
                     continue;
-                var v0 = VAME_Manager.pathPoints[list.Key][index - 1];
+                var p0 = VAME_Manager.pathPoints[list.Key][index - 1];
+                var v0 = p0.pp;
                 var newSegment = new PathLine(v0, v1);
                 if (v0.y != v1.y)
                     newSegment.Show = false;
@@ -64,11 +69,23 @@ public class gcdInterpreter
                 if (!VAME_Manager.pathLines.ContainsKey(list.Key))
                 {
                     VAME_Manager.pathLines.Add(list.Key, new List<PathLine>());
-                    VAME_Manager.pathHeights.Add(list.Key);                   
+                    VAME_Manager.pathHeights.Add(list.Key);
+                    if (list.Key > VAME_Manager.MaxLayerToShow)
+                        VAME_Manager.MaxLayerToShow = list.Key;
+                    if (list.Key < VAME_Manager.MinLayerToShow)
+                        VAME_Manager.MinLayerToShow = list.Key;
                 }
+                newSegment.Index = VAME_Manager.allPathLines.Count;
+                newSegment.Layer = list.Key;
+                newSegment.LineInCode = p0.LineInCode;
                 VAME_Manager.pathLines[list.Key].Add(newSegment);
+                VAME_Manager.allPathLines.Add(newSegment);
             }            
         }
+        InspectorL.instance.pathsMinSlider.interactable = true;
+        InspectorL.instance.pathsMaxSlider.interactable = true;
+        InspectorL.instance.pathsMinSlider.GetComponentInChildren<Text>().text = "Paths (Min): 0";
+        InspectorL.instance.pathsMaxSlider.GetComponentInChildren<Text>().text = "Paths (Max): " + VAME_Manager.allPathLines.Count.ToString();
         foreach (var h in VAME_Manager.pathHeights)
         {
             var index = VAME_Manager.pathHeights.IndexOf(h);
@@ -84,6 +101,7 @@ public class gcdInterpreter
 
     void scanGCD(string _line)
     {
+        VAME_Manager.pathsCode.Add(_line);
         if (_line == "\r\n") return;
         _line = _line.Trim();
         //gcdCode.Add(_line.ToString() + "\r\n");
@@ -190,8 +208,10 @@ public class gcdInterpreter
         Min = min;
         
         if (!VAME_Manager.pathPoints.ContainsKey(y))
-            VAME_Manager.pathPoints.Add(y, new List<Vector3>());
-        VAME_Manager.pathPoints[y].Add(newVertex);
+            VAME_Manager.pathPoints.Add(y, new List<pathPoint>());
+        var pp = new pathPoint(newVertex);
+        pp.LineInCode = VAME_Manager.pathsCode.Count - 1;
+        VAME_Manager.pathPoints[y].Add(pp);
 
 
         //if (verts.Count < 2)
@@ -230,4 +250,14 @@ public class gcdInterpreter
                 break;
         }
     }
+}
+
+public class pathPoint
+{
+    public pathPoint(Vector3 _pp)
+    {
+        pp = _pp;
+    }
+    public Vector3 pp { get; set; }
+    public int LineInCode { get; set; }
 }

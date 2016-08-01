@@ -2,19 +2,14 @@
 -target:library
 -nowarn:0169
 -out:Temp/Assembly-CSharp.dll
--r:"C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll"
--r:"C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll"
--r:"C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll"
+-r:"C:\Program Files\Unity\Editor\Data\PlaybackEngines\WindowsStandaloneSupport/Managed/UnityEngine.dll"
+-r:"C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Standalone/UnityEngine.UI.dll"
+-r:"C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Standalone/UnityEngine.Networking.dll"
 -r:Assets/Forms/SlicerForm/System.Data.dll
 -r:Assets/Forms/SlicerForm/System.Drawing.dll
 -r:Assets/Forms/SlicerForm/bin/Debug/MakarovDev.ExpandCollapsePanel.dll
 -r:Assets/Plugins/System.Windows.Forms.dll
 -r:Assets/Plugins/Vectrosity/Vectrosity.dll
--r:"C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll"
--r:"C:\Program Files\Unity\Editor\Data\PlaybackEngines\AppleTVSupport\UnityEditor.iOS.Extensions.Xcode.dll"
--r:"C:\Program Files\Unity\Editor\Data\PlaybackEngines\AppleTVSupport\UnityEditor.iOS.Extensions.Common.dll"
--r:"C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll"
--r:"C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport\UnityEditor.iOS.Extensions.Common.dll"
 -define:UNITY_5_3_OR_NEWER
 -define:UNITY_5_3_5
 -define:UNITY_5_3
@@ -79,13 +74,6 @@
 -define:ENABLE_CLUSTERINPUT
 -define:ENABLE_WEBSOCKET_HOST
 -define:ENABLE_MONO
--define:ENABLE_PROFILER
--define:DEBUG
--define:TRACE
--define:UNITY_ASSERTIONS
--define:UNITY_EDITOR
--define:UNITY_EDITOR_64
--define:UNITY_EDITOR_WIN
 Assets/CameraView.cs
 Assets/Forms/CCAT_Explorer/CCAT_Explorer/CCAT_Explorer/CCAT_E.Designer.cs
 Assets/Forms/CCAT_Explorer/CCAT_Explorer/CCAT_Explorer/CCAT_E.cs
@@ -167,6 +155,7 @@ Assets/scripts/Sloxels/Voxelizer.cs
 Assets/scripts/TogglePanelButton.cs
 Assets/scripts/UI/DragPanel.cs
 Assets/scripts/UI/InspectorL.cs
+Assets/scripts/UI/SaveDXF.cs
 Assets/scripts/UI/TopMenu.cs
 Assets/scripts/VAME_Manager.cs
 Assets/scripts/VAMEentities/model.cs

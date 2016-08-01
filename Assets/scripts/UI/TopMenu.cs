@@ -39,15 +39,17 @@ public class TopMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void SaveFile()
     {
         var sfd = new System.Windows.Forms.SaveFileDialog();
-        sfd.Filter = "VAME File (.vme) | *.vme | Paths To DXF (.dxf) | *.dxf";
+        sfd.Filter = "VAME File (.vme) | *.vme | All Paths To DXF (.dxf) | *.dxf | Selected Paths To DXF (.dxf) | *.dxf";
         //sfd.ShowDialog();
         if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             var path = sfd.FileName;
-            if (path.ToLower().EndsWith(".dxf"))
-                SaveDXF(path);
-            if (path.ToLower().EndsWith(".vme"))
+            if (sfd.FilterIndex == 0)
                 SaveVME(path);
+            else if (sfd.FilterIndex == 1)
+                SaveDXF(path, true);
+            else if (sfd.FilterIndex == 2)
+                SaveDXF(path, false);
         }
     }
 
@@ -82,28 +84,24 @@ public class TopMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         tw.Close();
     }
 
-    public void SaveDXF(string path)
-    {        
-        StreamWriter w = File.CreateText(path);
-        w.WriteLine(path);
-        foreach (var layer in VAME_Manager.pathLines)
+    public void SaveDXF(string path, bool isFull)
+    {
+        var saveDxf = new SaveDXF();
+        if (isFull)
+            saveDxf.ConvertFull(VAME_Manager.allPathLines);
+        else
         {
-            foreach (var line in layer.Value)
+            var lines = new System.Collections.Generic.List<PathLine>();
+            foreach(var line in VAME_Manager.allPathLines)
             {
-                //var s = 0.25f;
-                //var p1 = line.p1 / s;
-                //var p2 = t.p2 / s;
-                //var p3 = t.p3 / s;
-                //w.WriteLine("facet normal " + t.norm.x + " " + t.norm.y + " " + t.norm.z);
-                //w.WriteLine("outer loop");
-                //w.WriteLine("vertex " + p1.x + " " + p1.y + " " + p1.z);
-                //w.WriteLine("vertex " + p2.x + " " + p2.y + " " + p2.z);
-                //w.WriteLine("vertex " + p3.x + " " + p3.y + " " + p3.z);
-                //w.WriteLine("endloop");
-                //w.WriteLine("endfacet");
+                if (line.Show)
+                    lines.Add(line);
             }
+            saveDxf.ConvertFull(lines);
         }
-        w.WriteLine("endsolid");
+        var str = saveDxf.GetDxf;
+        StreamWriter w = File.CreateText(path);
+        w.Write(str);
         w.Close();
     }
     #endregion

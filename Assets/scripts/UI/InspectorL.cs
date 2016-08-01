@@ -17,6 +17,8 @@ public class InspectorL : MonoBehaviour
 
     public Slider visibiltySlider;
     public Slider pathVisibiltySlider;
+    public Slider pathsMaxSlider;
+    public Slider pathsMinSlider;
     public static float modelVisibility = 1.0f;
     public static float pathVisibility = 1.0f;
     public static float pointVisibility = 1.0f;
@@ -166,5 +168,32 @@ public class InspectorL : MonoBehaviour
             }
             codeDummy.transform.position = pos;
         }
+    }
+
+    public void SlidePathsMin()
+    {
+        PathsMinChange((int)(pathsMinSlider.value * VAME_Manager.allPathLines.Count));
+    }
+
+    public void SlidePathsMax()
+    {
+        PathsMaxChange((int)(pathsMaxSlider.value * VAME_Manager.allPathLines.Count));
+    }
+
+    public void PathsMinChange(int min)
+    {
+        pathsMinSlider.value = (float)min / (float)VAME_Manager.allPathLines.Count;
+        pathsMaxSlider.minValue = pathsMinSlider.value;
+        VAME_Manager.MinLayerToShow = pathsMinSlider.value;
+        CodeArea(VAME_Manager.allPathLines[min].LineInCode);
+        pathsMinSlider.GetComponentInChildren<Text>().text = "Paths (Min): " + min.ToString();
+    }
+
+    public void PathsMaxChange(int max)
+    {
+        pathsMaxSlider.value = (float)max / (float)VAME_Manager.allPathLines.Count;
+        pathsMinSlider.maxValue = pathsMaxSlider.value;
+        VAME_Manager.MaxLayerToShow = pathsMaxSlider.value;
+        pathsMaxSlider.GetComponentInChildren<Text>().text = "Paths (Max): " + max.ToString();
     }
 }

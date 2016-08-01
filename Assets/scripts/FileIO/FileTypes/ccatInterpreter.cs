@@ -141,4 +141,5 @@ public class CcatDataPoint
     public Vector3 Position { get; set; }
     public float EventTime { get; set; }
     public float TimeFactor { get; set; }
+    public int LineInCode { get; set; }
 }

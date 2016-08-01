@@ -8,6 +8,7 @@ public class Sloxelizer2
     public Dictionary<float, List<Sloxel>> sloxels = new Dictionary<float, List<Sloxel>>();
     public List<Voxel> voxels = new List<Voxel>();
     public static Sloxelizer2 instance;
+    public float HighestMean = 0;
 
     [HideInInspector]
     public float increment;
@@ -50,6 +51,7 @@ public class Sloxelizer2
                     var getInts = GetIntersects(new Vector3(x, cSect.Key, z));
                     if (getInts.Count < 1) continue;
                     var newSloxel = new Sloxel(new Vector3(x, cSect.Key, z), getInts, increment);
+                    newSloxel.SetDistances();
                     if (!sloxels[cSect.Key].Contains(newSloxel))
                     {
                         sloxels[cSect.Key].Add(newSloxel);
@@ -83,6 +85,7 @@ public class Sloxelizer2
                     }
                     if (newVoxel.Sloxels.Count > 0)
                     {
+                        newVoxel.SetDistances();
                         voxels.Add(newVoxel);
                     }
                 }
@@ -94,6 +97,8 @@ public class Sloxelizer2
         }
         VAME_Manager.slicerForm.Show();
         VAME_Manager.slicerForm.panel1.Invalidate();
+        VoxelInspector.instance.Min.interactable = true;
+        VoxelInspector.instance.Max.interactable = true;
     }
 
     public List<Vector2> GetIntersects(Vector3 p)
@@ -175,6 +180,11 @@ public class Sloxelizer2
                 return true;
         }
         return false;
+    }
+
+    public void GetDistances()
+    {
+        
     }
 }
 

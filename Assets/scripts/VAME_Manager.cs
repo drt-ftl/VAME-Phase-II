@@ -42,10 +42,13 @@ public class VAME_Manager : MonoBehaviour
     public static List<string> pathsCode = new List<string>();
     public static List<string> cctCode = new List<string>();
     public static Dictionary<float, List<PathLine>> pathLines = new Dictionary<float, List<PathLine>>();
-    public static Dictionary<float, List<Vector3>> pathPoints = new Dictionary<float, List<Vector3>>();
+    public static List<PathLine> allPathLines = new List<PathLine>();
+    public static Dictionary<float, List<pathPoint>> pathPoints = new Dictionary<float, List<pathPoint>>();
     public static List<GameObject> crazyBalls = new List<GameObject>();
     public static Dictionary<float, List<GameObject>> crazyBallsByLayer = new Dictionary<float, List<GameObject>>();
     public static List<float> pathHeights = new List<float>();
+    public static float MinLayerToShow;
+    public static float MaxLayerToShow;
 
     public static string modelFileName ="";
     public static string pathsFileName = "";
@@ -84,28 +87,24 @@ public class VAME_Manager : MonoBehaviour
         GL.Begin(GL.LINES);
         pathMat.SetPass(0);
         //GL.Color(col);
-        foreach (var list in pathLines)
+        foreach (var line in allPathLines)
         {
-            foreach (var line in list.Value)
+            if (line.Show)
             {
-                var selectedLayer = -10000f;
-                if (line.Show)
+                var col = line.Color;
+                col.a = InspectorL.instance.pathVisibiltySlider.value;
+                if (slicerForm != null)
                 {
-                    var col = line.Color;
-                    col.a = InspectorL.instance.pathVisibiltySlider.value;
-                    if (slicerForm != null)
-                    {
-                        if (list.Key == slicerForm.h)
-                            col = Color.green;
-                        if (line == slicerForm.selectedPathLine)
-                            col = Color.blue;
-                    }
-                    GL.Color(col);
-                    var p1 = (line.p1);
-                    var p2 = (line.p2);
-                    GL.Vertex(p1);
-                    GL.Vertex(p2);
+                    if (line.Layer == slicerForm.h)
+                        col = Color.green;
+                    if (line == slicerForm.selectedPathLine)
+                        col = Color.blue;
                 }
+                GL.Color(col);
+                var p1 = (line.p1);
+                var p2 = (line.p2);
+                GL.Vertex(p1);
+                GL.Vertex(p2);
             }
         }
         GL.End();
@@ -163,6 +162,8 @@ public class VAME_Manager : MonoBehaviour
 
     public void ClearPaths()
     {
+        InspectorL.instance.pathsMinSlider.interactable = false;
+        InspectorL.instance.pathsMaxSlider.interactable = false;
         ClearVoxels();
         PathsMax = Vector3.one * -100000;
         PathsMin = Vector3.one * 100000;
@@ -171,6 +172,7 @@ public class VAME_Manager : MonoBehaviour
         pathsCode.Clear();
         pathHeights.Clear();
         pathsFileName = "";
+        allPathLines.Clear();
         InspectorL.instance.btnPaths.interactable = false;
     }
     public void ClearVoxels()
@@ -227,7 +229,8 @@ public class VAME_Manager : MonoBehaviour
     {
         if (System.IO.Directory.Exists(VAME_Manager.tmpFolderName))
             System.IO.Directory.Delete(VAME_Manager.tmpFolderName, true);
-        slicerForm.Close();
+        if (slicerForm != null)
+            slicerForm.Close();
     }
     public void Generate()
     {
@@ -332,18 +335,18 @@ public class VAME_Manager : MonoBehaviour
         var biggest = Mathf.Max(size.x, size.y, size.z);
         var ratio = Mathf.Abs(initialScale / biggest);
         var c = ((PathsMax + PathsMin) * ratio) / 2.0f;
-        var newDict = new Dictionary<float, List<Vector3>>();
+        var newDict = new Dictionary<float, List<pathPoint>>();
         foreach (var kvp in pathPoints)
         {
             var newKey = kvp.Key;
             newKey *= ratio;
             newKey -= c.y;
-            newDict.Add(newKey, new List<Vector3>());            
+            newDict.Add(newKey, new List<pathPoint>());            
             foreach (var p in kvp.Value)
             {
                 var _p = p;
-                _p *= ratio;
-                _p  -= c;
+                _p.pp *= ratio;
+                _p.pp  -= c;
                 newDict[newKey].Add(_p);
             }            
         }
@@ -457,5 +460,95 @@ public class VAME_Manager : MonoBehaviour
         //    voxel.Cube.GetComponent<Renderer>().material.color = col;
         //}
         voxelVisibility.GetComponentInChildren<Text>().text = "Visibility: " + (100 * vis).ToString("f0") + "%";
+    }
+
+    public float ShortestDistanceBetweenTwoLines(Vector3 p1, Vector3 p2, Vector3 _p1, Vector3 _p2)
+    {
+        var A1 = p2.z - p1.z;
+        var B1 = p1.x - p2.x;
+        var C1 = A1 * p1.x + B1 * p1.z;
+
+        var A2 = _p2.z - _p1.z;
+        var B2 = _p1.x - _p2.x;
+        var C2 = A2 * _p1.x + B2 * _p1.z;
+
+        float delta = A1 * B2 - A2 * B1;
+        if (delta == 0)
+        {
+            return ShortestDistanceBetweenPointAndLine(p1, _p1, _p2, true);
+        }
+        var M1 = p2 - p1;
+        var M2 = _p2 - _p1;
+        var p = new Vector3();
+        p.x = (B2 * C1 - B1 * C2) / delta;
+        p.y = p1.y;
+        p.z = (A1 * C2 - A2 * C1) / delta;
+        var t1 = 0f;
+        var t2 = 0f;
+        var closestPoint1 = Vector3.zero;
+        var closestPoint2 = Vector3.zero;
+
+        if (M1.x != 0) t1 = (p.x - p1.x) / M1.x;
+        else if (M1.z != 0) t1 = (p.z - p1.z) / M1.z;
+        else return -1;
+
+        if (t1 <= 0)            closestPoint1 = p1;
+        else if (t1 >= 1)       closestPoint1 = p2;
+        else                    closestPoint1 = p1 + t1 * M1;
+
+        if (M2.x != 0)          t2 = (p.x - _p1.x) / M2.x;
+        else if (M2.z != 0)     t2 = (p.z - _p1.z) / M2.z;
+        else return -1;
+
+        if (t2 <= 0) closestPoint2 = _p1;
+        else if (t2 >= 1) closestPoint2 = _p2;
+        else closestPoint2 = _p1 + t2 * M2;
+        var d1 = ShortestDistanceBetweenPointAndLine(closestPoint1, _p1, _p2, false);
+        var d2 = ShortestDistanceBetweenPointAndLine(closestPoint2, p1, p2, false);
+        var min = Mathf.Min(d1, d2);
+        return min;
+    }
+
+    public float ShortestDistanceBetweenPointAndLine (Vector3 pt, Vector3 p1, Vector3 p2, bool infinite)
+    {
+        float dx = p2.x - p1.x;
+        float dz = p2.z - p1.z;
+        Vector3 closest;
+
+        if ((dx == 0) && (dz == 0))
+        {
+            // It's a point not a line segment.
+            closest = p1;
+            dx = pt.x - p1.x;
+            dz = pt.z - p1.z;
+            return -1;
+        }
+
+        // Calculate the t that minimizes the distance.
+        float t = ((pt.x - p1.x) * dx + (pt.z - p1.z) * dz) /
+            (dx * dx + dz * dz);
+
+        // See if this represents one of the segment's
+        // end points or a point in the middle.
+        if (t < 0 && !infinite)
+        {
+            closest = p1;
+            dx = pt.x - p1.x;
+            dz = pt.z - p1.z;
+        }
+        else if (t > 1 && !infinite)
+        {
+            closest = p2;
+            dx = pt.x - p2.x;
+            dz = pt.z - p2.z;
+        }
+        else
+        {
+            closest = new Vector3(p1.x + t * dx, p1.y,  p1.z + t * dz);
+            dx = pt.x - closest.x;
+            dz = pt.z - closest.z;
+        }
+
+        return Mathf.Sqrt(dx * dx + dz * dz);
     }
 }

@@ -28,4 +28,5 @@ public class Triangle
         var norm = Vector3.Normalize(dir);
         return norm;
     }
+    public int LineInCode { get; set; }
 }

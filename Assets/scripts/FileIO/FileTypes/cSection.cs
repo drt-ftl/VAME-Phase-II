@@ -335,6 +335,7 @@ public class cSection : MonoBehaviour
 
 public class PathLine
 {
+    bool show = true;
     public PathLine(Vector3 _p1, Vector3 _p2)
     {
         p1 = _p1;
@@ -345,11 +346,65 @@ public class PathLine
     }
     public Vector3 p1 { get; set; }
     public Vector3 p2 { get; set; }
-    public bool Show { get; set; }
+    public bool Show
+    {
+        get
+        {
+            var max = InspectorL.instance.pathsMaxSlider.value * VAME_Manager.allPathLines.Count;
+            var min = InspectorL.instance.pathsMinSlider.value * VAME_Manager.allPathLines.Count;
+            if (Index > max ||
+                Index < min)
+                return false;
+            return show;
+        }
+        set { show = value; }
+    }
+
+    private float minDistance = 10000f;
+    public float MinDistance
+    {
+        get
+        {
+            foreach (var line in cSection.cSectionsGCD[Layer])
+            {
+                if (line == this) continue;
+                var P1 = p1;
+                var P2 = p2;
+                var M = P2 - P1;
+                var _P1 = line.p1;
+                var _P2 = line.p2;
+                var _M = _P2 - _P1;
+
+                var A1 = 1.0f;
+                var B1 = M.y / M.x;
+                var C1 = B1 * P1.x - P1.y;
+
+                var A2 = 1.0f;
+                var B2 = _M.y / _M.x;
+                var C2 = B2 * _P1.x - _P1.y;
+
+                float delta = A1 * B2 - A2 * B1;
+                if (delta == 0) // parallel
+                {
+                }
+                else
+                {
+                    var x = (B2 * C1 - B1 * C2) / delta;
+                    var y = (A1 * C2 - A2 * C1) / delta;
+                    
+                }
+            }
+            return minDistance;
+        }
+    }
+
     public float StartTime { get; set; }
     public float EndTime { get; set; }
     public Color Color { get; set; }
     public Sloxel Sloxel {get;set;}
     public List<GameObject> ccatBalls { get; set; }
+    public int LineInCode { get; set; }
+    public int Index { get; set; }
+    public float Layer { get; set; }
 }
 

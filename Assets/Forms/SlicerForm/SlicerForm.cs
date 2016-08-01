@@ -225,6 +225,13 @@ namespace SlicerForm
                         readout += "Sloxel #: " + sloxelInVoxel.ToString() + " / " + sloxCount.ToString() + "\r\n";
                         readout += "Voxel #: " + Sloxelizer2.instance.voxels.IndexOf(selectedSloxel.Voxel).ToString() + "\r\n";
                         readout += "Layer #: " + h.ToString() + "\r\n";
+                        readout += "Mean Separation: ";
+                        if (selectedSloxel.MeanSeparation > 0) readout += selectedSloxel.MeanSeparation.ToString("f4") + "\r\n";
+                        else readout += "N/A\n";
+                        readout += "Median Separation: ";
+                        if (selectedSloxel.MedianSeparation > 0) readout += selectedSloxel.MedianSeparation.ToString("f4") + "\r\n";
+                        else readout += "N/A\n";
+                        readout += "Layer #: " + h.ToString() + "\r\n";
                         //readout += "Wall Thickness : " + hSlox.WallThickness.ToString() + "\r\n";
                         if (selectedSloxel.PathLines.Count == 1)
                             readout += "Intersected By 1 Line. \r\n";
@@ -240,9 +247,8 @@ namespace SlicerForm
                         }
                     }
                 }
-                if (ShowCsection.Checked)
-                {
-                    
+                if (ShowCsection.Checked && cSection.instance != null)
+                {                    
                     foreach (var border in cSection.cSectionsGCD[h])
                     {
                         wtLabel.Text = "Wall Thickness: " + (wtSlider.Value / 100f).ToString("f4");
@@ -359,6 +365,7 @@ namespace SlicerForm
                             selectedPathLine = line;
                             selectedSloxel = null;
                             panel1.Invalidate();
+                            InspectorL.instance.CodeArea(line.LineInCode);
                         }
                         MonoBehaviour.print(d.ToString("f3"));
                     }

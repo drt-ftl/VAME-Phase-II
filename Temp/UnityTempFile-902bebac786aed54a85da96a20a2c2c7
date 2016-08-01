@@ -167,6 +167,7 @@ Assets/scripts/Sloxels/Voxelizer.cs
 Assets/scripts/TogglePanelButton.cs
 Assets/scripts/UI/DragPanel.cs
 Assets/scripts/UI/InspectorL.cs
+Assets/scripts/UI/SaveDXF.cs
 Assets/scripts/UI/TopMenu.cs
 Assets/scripts/VAME_Manager.cs
 Assets/scripts/VAMEentities/model.cs
