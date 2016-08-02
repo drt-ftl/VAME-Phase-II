@@ -199,6 +199,7 @@
     <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Include="Assets\Forms\SlicerForm\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="Assets\GUI_3D.cs" />
+    <Compile Include="Assets\scripts\FileIO\FileTypes\jobInterpreter.cs" />
     <Compile Include="Assets\TESTS\ExampleClass.cs" />
     <Compile Include="Assets\TESTS\TestScript.cs" />
     <Compile Include="Assets\VoxelInspector.cs" />

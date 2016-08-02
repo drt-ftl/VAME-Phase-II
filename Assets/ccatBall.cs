@@ -5,6 +5,9 @@ public class ccatBall : MonoBehaviour
 {
     string txt = "";
     bool activated = false;
+    public Material material;
+    Color currentDefaultColor;
+    Color baseColor;
     
     public void Activate(int id, float time)
     {
@@ -20,13 +23,17 @@ public class ccatBall : MonoBehaviour
         }
         Distance = -1f;
         activated = true;
+        currentDefaultColor = Color.gray;
+        baseColor = currentDefaultColor;
+        material.color = currentDefaultColor;
+        gameObject.GetComponent<Renderer>().material = material;
     }
 
     void OnMouseDown()
     {
         return;
         if (!activated) return;
-        gameObject.GetComponent<Renderer>().material = VoxelInspector.instance.selected;
+        gameObject.GetComponent<Renderer>().material.color = Color.yellow;
         txt = "Id: " + Id.ToString() + "\n" + "Time: " + Time.ToString();
         VoxelInspector.instance.SetScrollText(txt);
     }
@@ -37,7 +44,7 @@ public class ccatBall : MonoBehaviour
         txt = "";
         txt = "Id: " + Id.ToString() + "\n" + "Time: " + Time.ToString("f4") + "\n" + "Distance: " + Distance.ToString("f4");
         VoxelInspector.instance.SetScrollText(txt);
-        gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.highlight;
+        gameObject.GetComponent<MeshRenderer>().material.color = Color.blue;
         if (ClosestLine != null)
             ClosestLine.Color = Color.blue;
         VoxelInspector.instance.SetScrollText(txt);
@@ -46,8 +53,7 @@ public class ccatBall : MonoBehaviour
     void OnMouseExit()
     {
         if (!activated) return;
-        gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.standard;
-        CurrentColor();
+        SetColor(currentDefaultColor);
 
         if (ClosestLine != null)
             ClosestLine.Color = VAME_Manager.instance.pathColor;
@@ -63,12 +69,14 @@ public class ccatBall : MonoBehaviour
     public float Distance { get; internal set; }
     public Sloxel Sloxel { get; set; }
 
-    private void CurrentColor()
+    public void SetToDefault()
     {
-        var color = new Color(0, 0, 0, 0.3f);
-        if (Distance >= 0)
-            color = new Color(0, 0, Distance * 2f, 0.3f);
-        GetComponent<MeshRenderer>().material.SetColor("_SpecColor", color);
+        currentDefaultColor = baseColor;
+    }
+    public void SetColor(Color color)
+    {
+        currentDefaultColor = color;
+        gameObject.GetComponent<MeshRenderer>().material.color = currentDefaultColor;
     }
 
     public void TestLine (PathLine testLine)
@@ -129,6 +137,6 @@ public class ccatBall : MonoBehaviour
                 }
             }
         }
-        CurrentColor();
+        //CurrentColor();
     }
 }

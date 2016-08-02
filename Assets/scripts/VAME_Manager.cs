@@ -54,6 +54,7 @@ public class VAME_Manager : MonoBehaviour
     public static string pathsFileName = "";
     public static string cctFileName = "";
     public static string tmpFolderName = "";
+    public static float averagePathsHeight = 0;
 
     public static SlicerForm.SlicerForm slicerForm;
 
@@ -158,6 +159,7 @@ public class VAME_Manager : MonoBehaviour
         modelCode.Clear();
         InspectorL.instance.btnModel.interactable = false;
         modelFileName = "";
+        InspectorL.instance.CodeArea(0);
     }
 
     public void ClearPaths()
@@ -174,6 +176,7 @@ public class VAME_Manager : MonoBehaviour
         pathsFileName = "";
         allPathLines.Clear();
         InspectorL.instance.btnPaths.interactable = false;
+        InspectorL.instance.CodeArea(0);
     }
     public void ClearVoxels()
     {
@@ -184,6 +187,7 @@ public class VAME_Manager : MonoBehaviour
         }
         Sloxelizer2.instance.voxels.Clear();
         Sloxelizer2.instance.sloxels.Clear();
+        VoxelInspector.instance.SetScrollText("");
     }
 
     public void ClearCCAT()
@@ -198,6 +202,7 @@ public class VAME_Manager : MonoBehaviour
         crazyBallsByLayer.Clear();
         cctFileName = "";
         InspectorL.instance.btnPoints.interactable = false;
+        InspectorL.instance.CodeArea(0);
     }
 
     public void LoadFile()
@@ -389,7 +394,7 @@ public class VAME_Manager : MonoBehaviour
             var layer = VAME_Manager.pathHeights[0];
             foreach (var height in pathHeights)
             {
-                if (Mathf.Abs((point.Position.y - centroid.y) * scale - height) < gcdInterpreter.averageHeight / 4.0f)
+                if (Mathf.Abs((point.Position.y - centroid.y) * scale - height) < averagePathsHeight / 4.0f)
                 {
                     layer = height;
                     break;
@@ -426,6 +431,26 @@ public class VAME_Manager : MonoBehaviour
                             {
                                 crazyBall.GetComponent<ccatBall>().TestLine(pathLines[line.x][(int)line.y]);
                             }
+
+
+                            var cu = Color.white;
+                            if (crazyBall.GetComponent<ccatBall>().Distance < 0)
+                            {
+                                crazyBall.GetComponent<ccatBall>().SetColor(new Color(0, 0, 0, 0));
+                                crazyBall.GetComponent<Collider>().enabled = false;
+                            }
+                            else
+                            {
+                                var d = crazyBall.GetComponent<ccatBall>().Distance * 0.25f;
+                                if (d > 1) d = 1;
+                                cu.a = 1.0f;
+                                cu.r = d;
+                                cu.g = 1.0f - d;
+                                cu.b = 0f;
+                                crazyBall.GetComponent<ccatBall>().SetColor(cu);
+                            }
+
+
                             sloxel.ccatBalls.Add(crazyBall);
                         }
                     }
@@ -445,7 +470,8 @@ public class VAME_Manager : MonoBehaviour
         var col = VoxelInspector.instance.standard.color;
         col.a = vis;
         VoxelInspector.instance.standard.color = col;
-        vis = Mathf.Pow(vis, 0.1f);
+
+        vis = (0.7f * Mathf.Pow(vis, 0.1f)) + 0.3f;
         col = VoxelInspector.instance.highlight.color;
         col.a = vis;
         VoxelInspector.instance.highlight.color = col;

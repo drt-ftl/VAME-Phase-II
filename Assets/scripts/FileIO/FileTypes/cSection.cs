@@ -350,10 +350,19 @@ public class PathLine
     {
         get
         {
+            var selectedLayer = false;
             var max = InspectorL.instance.pathsMaxSlider.value * VAME_Manager.allPathLines.Count;
             var min = InspectorL.instance.pathsMinSlider.value * VAME_Manager.allPathLines.Count;
-            if (Index > max ||
+            if (VAME_Manager.slicerForm != null)
+            {
+                var v = VAME_Manager.slicerForm.LayerUpDown.Value;
+                var layer = VAME_Manager.pathHeights[(int)v];
+                if (layer == Layer)
+                    selectedLayer = true;
+            }
+            if ((Index > max ||
                 Index < min)
+                && !selectedLayer)
                 return false;
             return show;
         }

@@ -17,7 +17,7 @@ public class ccatInterpreter
     private Vector3 Centroid = Vector3.zero;
 
 
-    public ccatInterpreter (string _path)
+    public ccatInterpreter (string _path, bool real)
     {
         instance = this;
         var tr = File.OpenText(_path);
@@ -37,11 +37,13 @@ public class ccatInterpreter
                 {
                     var v = Vector3.zero;
                     t /= 1000; // Scale To Seconds (from ms)
-                    if (float.TryParse(split[0], out x) && float.TryParse(split[1], out z) && float.TryParse(split[2], out y))
+                    if (float.TryParse(split[0], out x) && float.TryParse(split[1], out y) && float.TryParse(split[2], out z))
                     {
                         v.x = x;
-                        v.y = y;
-                        v.z = z;
+                        if (real)   v.y = y;
+                        else        v.y = z;
+                        if (real) v.z = z;
+                        else v.z = y;
                         v /= 101600f; // Scale to inches (from turns)
                         var newPoint = new CcatDataPoint();
                         newPoint.Position = v;

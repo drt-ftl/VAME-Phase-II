@@ -26,7 +26,7 @@ public class CameraView : MonoBehaviour
         var xFactor = (mp.x - lastMp.x) * scaleRot;
         var yFactor = -(mp.y - lastMp.y) * scaleRot;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {

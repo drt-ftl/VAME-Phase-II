@@ -9,13 +9,25 @@ public class Info : MonoBehaviour
     private Sloxelizer2 sl2;
     bool activated = false;
     string txt = "";
+    public enum State { Standard, Highlighted, Selected }
+    public State state;
 
     public void Activate (Voxel _voxel, Sloxelizer2 _sl2)
     {
+        state = State.Standard;
         voxel = _voxel;
         sl2 = _sl2;
         Voxel();
         activated = true;
+    }
+
+    void Update()
+    {
+        var col = VoxelInspector.instance.standard.color;
+        if (col.a < 0.1f && GetComponent<Renderer>().enabled && GetComponent<Collider>().enabled && this != VAME_Manager.instance.selectedVoxelInfo)
+            SetActive(false);
+        else if (col.a >= 0.1f && !GetComponent<Renderer>().enabled && !GetComponent<Collider>().enabled)
+            SetActive(true);
     }
 
     public void SetActive(bool active)
@@ -40,12 +52,14 @@ public class Info : MonoBehaviour
     {
         if (this == VAME_Manager.instance.selectedVoxelInfo) return;
         gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.highlight;
+        state = State.Highlighted;
     }
 
     void OnMouseExit()
     {
         if (this == VAME_Manager.instance.selectedVoxelInfo) return;
         gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.standard;
+        state = State.Standard;
     }
 
     public void SelectVoxel(bool directClick)
@@ -77,6 +91,8 @@ public class Info : MonoBehaviour
             i++;
         }
         VoxelInspector.instance.SetScrollText(txt);
+        state = State.Selected;
+        SetActive(true);
     }
 
     #region Cube

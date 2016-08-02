@@ -12,14 +12,14 @@ public class LoadFile
     {
         var ofd = new OpenFileDialog();
         ofd.InitialDirectory = UnityEngine.Application.dataPath + "/Models";
-        ofd.Filter = "Model Files (*.stl, *.obj) | *.stl";// ;*.STL;*.obj;*.OBJ";
-        ofd.Filter += " | Path Files (*.gcd) | *.gcd";
+        ofd.Filter = "Model Files (*.stl, *.obj) | *.stl;*.obj";// ;*.STL;*.obj;*.OBJ";
+        ofd.Filter += " | Path Files (*.gcd, *.job) | *.gcd;*.job";
         ofd.Filter += " | CCAT Files (*.cct) | *.cct";
+        ofd.Filter += " | Virtual CCAT Files (*.vcct) | *.vcct";
         ofd.Filter += " | VAME Files (*.vme) | *.vme";
         if (ofd.ShowDialog() == DialogResult.OK)
         {
-            LoadIt(ofd.FileName);
-            
+            LoadIt(ofd.FileName);            
         }
     }
 
@@ -31,6 +31,7 @@ public class LoadFile
             var i = new stlInterpreter(n);
             VAME_Manager._type = VAME_Manager.type.model;
             VAME_Manager.modelFileName = n;
+            cSection.instance.DoSlices(20);
         }
         else if (n.ToLower().EndsWith(".obj"))
         {
@@ -46,10 +47,24 @@ public class LoadFile
             VAME_Manager._type = VAME_Manager.type.paths;
             VAME_Manager.pathsFileName = n;
         }
+        else if (n.ToLower().EndsWith(".job"))
+        {
+            VAME_Manager.instance.ClearPaths();
+            var i = new jobInterpreter(n);
+            VAME_Manager._type = VAME_Manager.type.paths;
+            VAME_Manager.pathsFileName = n;
+        }
         else if (n.ToLower().EndsWith(".cct"))
         {
-            //VAME_Manager.instance.ClearPaths();
-            var i = new ccatInterpreter(n);
+            VAME_Manager.instance.ClearCCAT();
+            var i = new ccatInterpreter(n, true);
+            VAME_Manager._type = VAME_Manager.type.points;
+            VAME_Manager.cctFileName = n;
+        }
+        else if (n.ToLower().EndsWith(".vcct"))
+        {
+            VAME_Manager.instance.ClearCCAT();
+            var i = new ccatInterpreter(n, false);
             VAME_Manager._type = VAME_Manager.type.points;
             VAME_Manager.cctFileName = n;
         }
@@ -109,6 +124,11 @@ public class LoadFile
                     VAME_Manager.instance.DoSloxels();
                 }
             }
+        }
+
+        if (Sloxelizer2.instance != null)
+        {
+            VAME_Manager.instance.DoSloxels();
         }
     }
 }

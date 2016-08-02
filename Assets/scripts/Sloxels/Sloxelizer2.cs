@@ -17,7 +17,7 @@ public class Sloxelizer2
     {
         instance = this;
         
-        cSection.instance.DoSlices(20);
+        //cSection.instance.DoSlices(20);
         sloxels = new Dictionary<float, List<Sloxel>>();
         var min = VAME_Manager.PathsMin;
         var max = VAME_Manager.PathsMax;

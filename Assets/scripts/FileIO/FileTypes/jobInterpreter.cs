@@ -4,22 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using UnityEngine;
-using System.IO;
 using UnityEngine.UI;
+using System.IO;
 
-public class gcdInterpreter
+public class jobInterpreter
 {
-    public gcdInterpreter instance;
+    public static jobInterpreter instance;
     public static float y = 0;
-    public Vector3 Min { get; set; }
-    public Vector3 Max { get; set; }
+    private Vector3 Min { get; set; }
+    private Vector3 Max { get; set; }
     public bool LaserOn = false;
     private Vector3 lastPoint;
-    //private List<Vector3> verts = new List<Vector3>();
-    int i = 0;
     float lastEndTime = 0;
+    public static float layerHeight = 0.001f;
 
-    public gcdInterpreter(string _filename)
+    //public Vector3 centroid
+    //{
+    //    get
+    //    {
+    //        var c = (Min + Max) / 2.0f;
+    //        return c;
+    //    }
+    //}
+
+    public jobInterpreter(string _filename)
     {
         instance = this;
         y = 0;
@@ -32,8 +40,7 @@ public class gcdInterpreter
         while (!reader.EndOfStream)
         {
             var s = reader.ReadLine();
-            //VAME_Manager.pathsCode.Add(s);
-            scanGCD(s);
+            scanJOB(s);
         }
         if (VAME_Manager.pathsCode.Count == 0) return;
         VAME_Manager.PathsMax = Max;
@@ -77,9 +84,10 @@ public class gcdInterpreter
                 newSegment.Index = VAME_Manager.allPathLines.Count;
                 newSegment.Layer = list.Key;
                 newSegment.LineInCode = p0.LineInCode;
+                //newSegment.Show = pp.Show;
                 VAME_Manager.pathLines[list.Key].Add(newSegment);
                 VAME_Manager.allPathLines.Add(newSegment);
-            }            
+            }
         }
         InspectorL.instance.pathsMinSlider.interactable = true;
         InspectorL.instance.pathsMaxSlider.interactable = true;
@@ -89,21 +97,21 @@ public class gcdInterpreter
         {
             var index = VAME_Manager.pathHeights.IndexOf(h);
             if (index == 0) continue;
-            VAME_Manager.averagePathsHeight += h - VAME_Manager.pathHeights[index - 1];
+            //VAME_Manager.averagePathsHeight += h - VAME_Manager.pathHeights[index - 1];
         }
-        VAME_Manager.averagePathsHeight /= VAME_Manager.pathPoints.Count;
+        //VAME_Manager.averagePathsHeight /= VAME_Manager.pathPoints.Count;
         if (VAME_Manager.slicerForm != null)
         {
             VAME_Manager.slicerForm.panel1.Invalidate();
         }
     }
 
-    void scanGCD(string _line)
+    void scanJOB(string _line)
     {
-        VAME_Manager.pathsCode.Add(_line);
+        VAME_Manager.pathsCode.Add(_line.ToString() + "\r\n");
+        if (_line.StartsWith("G90")) LaserOn = !LaserOn;
         if (_line == "\r\n") return;
         _line = _line.Trim();
-        //gcdCode.Add(_line.ToString() + "\r\n");
         if (!_line.Contains(' ')) return;
         var chunks = _line.Split(' ');
         switch (chunks[0][0])
@@ -114,18 +122,8 @@ public class gcdInterpreter
                     StartsWithG(_line);
                 }
                 break;
-            case 'O':
-                if (chunks[0][1] == 'U')
-                {
-                    if (chunks.Length > 1 && chunks[1].Contains(","))
-                    {
-                        var command = chunks[1].Split(',');
-                        if (command[1] == "0")
-                            LaserOn = false;
-                        else LaserOn = true;
-                    }
-                }
-                //gcdInterpreter.StartsWithOU(_line);
+            case '*':
+                StartsWithStar(_line);
                 break;
             default:
                 break;
@@ -137,29 +135,21 @@ public class gcdInterpreter
         if (!_line.Contains(' ')) return;
         var _chunks = _line.Split(' ');
         var _chunk = _chunks[0]; // Initial Line, which starts with 'G'
-        if (_chunks.Length < 2) return;
+        if (_chunks.Length < 3) return;
         switch (_chunk[1])
         {
-            case '1':
-                DoG(_chunks);
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void StartsWithOU(string _line)
-    {
-        if (!_line.Contains(' ')) return;
-        var _chunks = _line.Split(' ');
-        var onOff = _chunks[1].Split(',')[1];
-        switch (onOff[1])
-        {
-            case '1':
-                LaserOn = true;
-                break;
             case '0':
-                LaserOn = false;
+                switch (_chunk[2])
+                {
+                    case '0':
+                        
+                        break;
+                    case '1':
+                        DoG(_chunks);
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
@@ -168,33 +158,17 @@ public class gcdInterpreter
 
     void DoG(string[] _chunks)
     {
-        //if (LaserOn) return;
-        if (_chunks[1].Contains('F')) return;
-        if (_chunks[1].StartsWith("Z"))
-        {
-            var Y = _chunks[1].TrimStart('Z');
-            float _y;
-            if (float.TryParse(Y, out _y))
-            {
-                y = _y;
-                i++;
-                return;
-            }
-        }
         Vector3 newVertex = new Vector3();
         var X = _chunks[1].TrimStart('X');
         var Z = _chunks[2].TrimStart('Y');
         float x;
         float z;
         if (float.TryParse(X, out x))
-        {
             newVertex.x = x;
-        }
         if (float.TryParse(Z, out z))
-        {
             newVertex.z = z;
-        }
         newVertex.y = y;
+
         var max = Max;
         var min = Min;
         if (x > Max.x) max.x = x;
@@ -205,42 +179,27 @@ public class gcdInterpreter
         if (z < Min.z) min.z = z;
         Max = max;
         Min = min;
-        
+
         if (!VAME_Manager.pathPoints.ContainsKey(y))
             VAME_Manager.pathPoints.Add(y, new List<pathPoint>());
         var pp = new pathPoint(newVertex);
-        pp.LineInCode = VAME_Manager.pathsCode.Count - 1;
         pp.Show = LaserOn;
+        pp.LineInCode = VAME_Manager.pathsCode.Count - 1;
         VAME_Manager.pathPoints[y].Add(pp);
-
-
-        //if (verts.Count < 2)
-        //    verts.Add(newVertex);
-        //if (verts.Count >= 2)
-        //{
-        //    if (!VAME_Manager.gcdPathLines.ContainsKey(y))
-        //    {
-        //        VAME_Manager.gcdPathLines.Add(y, new List<PathLine>());
-        //    }
-        //    VAME_Manager.gcdPathLines[y].Add(new PathLine(verts[0], verts[1]));
-        //    verts.Clear();
-        //}
     }
 
-    public void StartsWithO(string _line)
+    public void StartsWithM(string _line)
     {
         var _chunks = _line.Split(' ');
-        var _chunk = _chunks[0]; // Initial Line, which starts with 'O'
+        var _chunk = _chunks[0]; // Initial Line, which starts with 'G'
         switch (_chunk[1])
         {
-            case 'U':
-                switch (_chunks[2][3])
+            case '0':
+                switch (_chunk[2])
                 {
                     case '0':
-                        MessageBox.Show("Off");
                         break;
                     case '1':
-                        MessageBox.Show("On");
                         break;
                     default:
                         break;
@@ -250,16 +209,23 @@ public class gcdInterpreter
                 break;
         }
     }
-}
 
-public class pathPoint
-{
-    public pathPoint(Vector3 _pp)
-    {
-        pp = _pp;
-        Show = true;
-    }
-    public Vector3 pp { get; set; }
-    public int LineInCode { get; set; }
-    public bool Show { get; set; }
+	public void StartsWithStar(string _line)
+	{
+		var _chunks = _line.Split(' ');
+        if (_chunks[0] == "*REM" && _chunks[1] == "Layer")
+        {
+            if (_chunks[2] == "Thickness")
+            {
+                float th;
+                if (float.TryParse(_chunks[4], out th))
+                {
+                    layerHeight = th;
+                    VAME_Manager.averagePathsHeight = layerHeight;
+                }
+            }
+            if (_chunks[2] == "Change")
+                y += layerHeight;
+        }
+	}
 }

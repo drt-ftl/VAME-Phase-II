@@ -152,7 +152,7 @@ namespace SlicerForm
                                         var c = System.Drawing.Color.FromArgb(0, 255, 0, 10);
                                         if (cb.GetComponent<ccatBall>().Distance < 0)
                                         {
-                                            c = System.Drawing.Color.FromArgb(255, 0, 0, 255);
+                                            c = System.Drawing.Color.FromArgb(0, 0, 0, 255); //DRT Changed to hide -1 Error
                                         }
                                         else
                                         {
@@ -329,7 +329,7 @@ namespace SlicerForm
         }
 
         private void ShowSloxels_CheckedChanged(object sender, EventArgs e)
-        {
+        {            
             panel1.Invalidate();
         }
 
@@ -367,7 +367,6 @@ namespace SlicerForm
                             panel1.Invalidate();
                             InspectorL.instance.CodeArea(line.LineInCode);
                         }
-                        MonoBehaviour.print(d.ToString("f3"));
                     }
                     break;
                 case SelectByMode.DataPoint:
@@ -398,6 +397,7 @@ namespace SlicerForm
                         if (mPos.X > sPos.x - dim && mPos.X < sPos.x + dim
                             && mPos.Y > sPos.y - dim && mPos.Y < sPos.y + dim)
                         {
+                            VoxelInspector.instance.SetParams();
                             SloxelNumber.Value = sloxList.IndexOf(sloxel);
                             selectedBall = null;
                             selectedPathLine = null;
