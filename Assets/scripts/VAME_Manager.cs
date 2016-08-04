@@ -32,6 +32,7 @@ public class VAME_Manager : MonoBehaviour
     public Slider voxelVisibility;
     public Button voxelizerButton;
     public Info selectedVoxelInfo;
+    public ccatBall selectedBall;
     public GameObject yncVeil;
     public static int voxelResolution;
 
@@ -409,7 +410,7 @@ public class VAME_Manager : MonoBehaviour
         foreach (var cb in crazyBalls)
         {
             var index = crazyBalls.IndexOf(cb);
-            cb.GetComponent<ccatBall>().Activate(index, (float)index/(float)crazyBalls.Count);
+            cb.GetComponent<ccatBall>().Activate(index, (float)index/ crazyBalls.Count);
         }
     }
 
@@ -441,16 +442,14 @@ public class VAME_Manager : MonoBehaviour
                             }
                             else
                             {
-                                var d = crazyBall.GetComponent<ccatBall>().Distance * 0.25f;
-                                if (d > 1) d = 1;
+                                var d = crazyBall.GetComponent<ccatBall>().Distance;
+                                d /= ccatInterpreter.instance.MaxDistanceError;
                                 cu.a = 1.0f;
                                 cu.r = d;
                                 cu.g = 1.0f - d;
                                 cu.b = 0f;
                                 crazyBall.GetComponent<ccatBall>().SetColor(cu);
                             }
-
-
                             sloxel.ccatBalls.Add(crazyBall);
                         }
                     }
@@ -467,24 +466,21 @@ public class VAME_Manager : MonoBehaviour
     public void VoxelVisibiltyChanged()
     {
         var vis = voxelVisibility.value;
-        var col = VoxelInspector.instance.standard.color;
+        var col = VoxelInspector.instance.baseColor;
         col.a = vis;
+        VoxelInspector.instance.baseColor = col;
+        //var col = VoxelInspector.instance.standard.color;
+        //col.a = vis;
         VoxelInspector.instance.standard.color = col;
 
-        vis = (0.7f * Mathf.Pow(vis, 0.1f)) + 0.3f;
-        col = VoxelInspector.instance.highlight.color;
-        col.a = vis;
-        VoxelInspector.instance.highlight.color = col;
+        //vis = (0.7f * Mathf.Pow(vis, 0.1f)) + 0.3f;
+        //col = VoxelInspector.instance.highlight.color;
+        //col.a = vis;
+        //VoxelInspector.instance.highlight.color = col;
 
-        col = VoxelInspector.instance.selected.color;
-        col.a = vis;
-        VoxelInspector.instance.selected.color = col;
-        //foreach (var voxel in Sloxelizer2.instance.voxels)
-        //{
-        //    var col = voxel.Cube.GetComponent<Renderer>().material.color;
-        //    col.a = vis;
-        //    voxel.Cube.GetComponent<Renderer>().material.color = col;
-        //}
+        //col = VoxelInspector.instance.selected.color;
+        //col.a = vis;
+        //VoxelInspector.instance.selected.color = col;
         voxelVisibility.GetComponentInChildren<Text>().text = "Visibility: " + (100 * vis).ToString("f0") + "%";
     }
 

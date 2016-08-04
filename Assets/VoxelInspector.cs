@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 using System.Collections;
 
 public class VoxelInspector : MonoBehaviour
@@ -9,19 +10,41 @@ public class VoxelInspector : MonoBehaviour
     public Material standard;
     public Material highlight;
     public Material selected;
-    public Slider Min;
-    public Slider Max;
-    public Slider Resolution;
-    public enum FilterMode { None, Min, Median }
+    public Slider MinVoxelsSlider;
+    public Slider MaxVoxelsSlider;
+    public Slider MinPointsSlider;
+    public Slider MaxPointsSlider;
+    public Slider ResolutionSlider;
+    public Slider VisibilitySlider;
+    public Dropdown voxelDropdown;
+    public Dropdown pointsDropdown;
+
+    public enum FilterMode { None, MinSepPaths, MedianPaths, NumIntersectionsPaths, DistanceErrorPoints, TimeErrorPoints, TemperaturePoints }
     [HideInInspector]
-    public FilterMode filterMode;
+    public VoxelInspector.FilterMode voxelFilterMode;
+    public VoxelInspector.FilterMode pointsFilterMode;
+    public Dictionary<float, Vector3> j;
+    public Dictionary <FilterMode, FilterModeClass> modes = new Dictionary<FilterMode, FilterModeClass>();
+    public Color baseColor;
+    public Color baseColorStandard;
 
     void Awake()
     {
         instance = this;
-        filterMode = FilterMode.None;
-        Resolution.value = 10;
+        voxelFilterMode = FilterMode.None;
+        pointsFilterMode = FilterMode.None;
+        ResolutionSlider.value = 10;
+        baseColor = Color.gray;
+        baseColorStandard = baseColor;
+        modes.Add(FilterMode.None, new FilterModeClass());
+        modes.Add(FilterMode.MinSepPaths, new FilterModeClass());
+        modes.Add(FilterMode.MedianPaths, new FilterModeClass());
+        modes.Add(FilterMode.NumIntersectionsPaths, new FilterModeClass());
+        modes.Add(FilterMode.DistanceErrorPoints, new FilterModeClass());
+        modes.Add(FilterMode.TimeErrorPoints, new FilterModeClass());
+        modes.Add(FilterMode.TemperaturePoints, new FilterModeClass());
     }
+
 
     public void SetScrollText(string txt)
     {
@@ -30,39 +53,263 @@ public class VoxelInspector : MonoBehaviour
 
     public void SetFilterMode(string _filterMode)
     {
+        FilterModeClass thisMode = modes[FilterMode.None];
+        Slider sMin = MinVoxelsSlider;
+        Slider sMax = MaxVoxelsSlider;
+        Text tMin = MinVoxelsSlider.GetComponentInChildren<Text>();
+        Text tMax = MaxVoxelsSlider.GetComponentInChildren<Text>();
+        string type = "Voxels";
         switch (_filterMode)
         {
-            case "Min":
-                filterMode = FilterMode.Min;
+            case "Voxels":
+                switch (voxelDropdown.value)
+                {
+                    case (1):
+                        voxelFilterMode = FilterMode.MinSepPaths;
+                        break;
+                    case (2):
+                        voxelFilterMode = FilterMode.MedianPaths;
+                        break;
+                    case (3):
+                        voxelFilterMode = FilterMode.NumIntersectionsPaths;
+                        break;
+                    default:
+                        voxelFilterMode = FilterMode.None;
+                        break;
+                }
+
+                thisMode = modes[voxelFilterMode];
+                SetParams("Voxels");
                 break;
-            case "Median":
-                filterMode = FilterMode.Median;
+            case "Points":
+                type = "Points";
+                switch (pointsDropdown.value)
+                {
+                    case (1):
+                        pointsFilterMode = FilterMode.DistanceErrorPoints;
+                        break;
+                    case (2):
+                        pointsFilterMode = FilterMode.TimeErrorPoints;
+                        break;
+                    case (3):
+                        pointsFilterMode = FilterMode.TemperaturePoints;
+                        break;
+                    default:
+                        pointsFilterMode = FilterMode.None;
+                        break;
+                }
+                thisMode = modes[pointsFilterMode];
                 break;
             default:
-                filterMode = FilterMode.None;
+                //voxelFilterMode = FilterMode.None;
+                //pointsFilterMode = FilterMode.None;
+                break;
+        }
+        var min = thisMode.Min;
+        var max = thisMode.Max;
+        var cMin = thisMode.CurrentValueMin;
+        var cMax = thisMode.CurrentValueMax;
+        switch (type)
+        {
+            case "Points":
+                MinPointsSlider.maxValue = cMax;
+                MinPointsSlider.minValue = min;
+                MinPointsSlider.value = cMin;
+                MinPointsSlider.GetComponentInChildren<Text>().text = cMin.ToString();
+                MaxPointsSlider.maxValue = max;
+                MaxPointsSlider.minValue = min;
+                MaxPointsSlider.value = cMax;
+                MaxPointsSlider.GetComponentInChildren<Text>().text = cMax.ToString();
+                SetParams("Points");
+                break;
+            default:
+                MinVoxelsSlider.maxValue = cMax;
+                MinVoxelsSlider.minValue = min;
+                MinVoxelsSlider.value = cMin;
+                MinVoxelsSlider.GetComponentInChildren<Text>().text = cMin.ToString();
+                MaxVoxelsSlider.maxValue = max;
+                MaxVoxelsSlider.minValue = min;
+                MaxVoxelsSlider.value = cMax;
+                MaxVoxelsSlider.GetComponentInChildren<Text>().text = cMax.ToString();
+                SetParams("Voxels");
                 break;
         }
     }
 
-    public void SetParams()
+    public void InitializeParams()
     {
-        Min.maxValue = Max.value;
-        Max.GetComponentInChildren<Text>().text = "Max: " + (Max.value * Sloxelizer2.instance.HighestMean).ToString("f4");
-        Min.GetComponentInChildren<Text>().text = "Min: " + (Min.value * Sloxelizer2.instance.HighestMean).ToString("f4");
-        foreach (var voxel in Sloxelizer2.instance.voxels)
+        if (Sloxelizer2.instance != null)
         {
-            var info = voxel.Cube.GetComponent<Info>();
-            var state = info.state;
-            if ((Max.value * Sloxelizer2.instance.HighestMean >= voxel.MeanSeparation && Min.value * Sloxelizer2.instance.HighestMean <= voxel.MeanSeparation) ||
-                voxel.MeanSeparation < 0 ||
-                state == Info.State.Selected)
-            {
-                voxel.Cube.GetComponent<Info>().SetActive(true);
-            }
-            else
-            {
-                voxel.Cube.GetComponent<Info>().SetActive(false);
-            }
+            modes[FilterMode.MinSepPaths] = new FilterModeClass(FilterMode.MinSepPaths, 0, Sloxelizer2.instance.HighestSeparation, 1);
+            modes[FilterMode.MedianPaths] = new FilterModeClass(FilterMode.MedianPaths, 0, Sloxelizer2.instance.HighestMean, 1);
+            modes[FilterMode.NumIntersectionsPaths] = new FilterModeClass(FilterMode.NumIntersectionsPaths, 0, Sloxelizer2.instance.HighestNumIntersects, 1);
+        }
+        if (ccatInterpreter.instance != null)
+        {
+            modes[FilterMode.DistanceErrorPoints] = new FilterModeClass(FilterMode.DistanceErrorPoints, 0, ccatInterpreter.instance.MaxDistanceError, 1);
+            modes[FilterMode.TimeErrorPoints] = new FilterModeClass(FilterMode.TimeErrorPoints, 0, ccatInterpreter.instance.MaxTimeError, 1);
+            modes[FilterMode.TemperaturePoints] = new FilterModeClass(FilterMode.TemperaturePoints, 0, ccatInterpreter.instance.MaxTemperature, 1);
         }
     }
+
+    public void SetParams(string type)
+    {
+        switch (type)
+        {
+            #region Voxels            
+            case "Voxels":
+                SetSliders("Voxels");
+                if (Sloxelizer2.instance == null) break;
+
+                foreach (var voxel in Sloxelizer2.instance.voxels)
+                {
+                    var info = voxel.Cube.GetComponent<Info>();
+                    var state = info.state;
+                    float vValue;
+                    switch (voxelFilterMode)
+                    {
+                        case FilterMode.MedianPaths:
+                            vValue = voxel.MeanSeparation;
+                            break;
+                        case FilterMode.MinSepPaths:
+                            vValue = voxel.MinSeparation;
+                            break;
+                        case FilterMode.NumIntersectionsPaths:
+                            vValue = voxel.NumIntersections;
+                            break;
+                        default:
+                            vValue = 1f;
+                            break;
+                    }
+                    if (MaxVoxelsSlider.value>= vValue && MinVoxelsSlider.value <= vValue)
+                    {
+                        if (info.state != Info.State.Selected)
+                        {
+                            info.state = Info.State.PartOfSet;
+                            info.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        if (info.state != Info.State.Selected)
+                        {
+                            info.state = Info.State.Standard;
+                            info.SetActive(false);
+                        }
+                    }
+                }
+                #endregion
+                break;
+            #region Points
+            case "Points":
+                SetSliders("Points");
+                if (ccatInterpreter.instance == null) break;
+                foreach (var ball in VAME_Manager.crazyBalls)
+                {
+                    var cb = ball.GetComponent<ccatBall>();
+                    var state = cb.ballState;
+                    float pValue;
+                    switch (pointsFilterMode)
+                    {
+                        case FilterMode.DistanceErrorPoints:
+                            pValue = cb.Distance;
+                            break;
+                        case FilterMode.TimeErrorPoints:
+                            pValue = cb.TimeError;
+                            break;
+                        case FilterMode.TemperaturePoints:
+                            pValue = cb.Temp;
+                            break;
+                        default:
+                            pValue = 1f;
+                            break;
+                    }
+                    
+                    if (MaxPointsSlider.value >= pValue && MinPointsSlider.value <= pValue)
+                    {
+                        if (cb.ballState != ccatInterpreter.BallState.Selected)
+                        {
+                            cb.ballState = ccatInterpreter.BallState.PartOfSet;
+                            cb.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        if (cb.ballState != ccatInterpreter.BallState.Selected)
+                        {
+                            cb.ballState = ccatInterpreter.BallState.Default;
+                            cb.SetActive(false);
+                        }
+                    }
+                }
+                #endregion
+                break;
+            default:
+                break;
+        }        
+    }
+
+    private void SetValues()
+    {
+
+    }
+
+    private void SetSliders(string type)
+    {
+        FilterModeClass thisMode = modes[FilterMode.None];
+        Slider sMin = MinVoxelsSlider;
+        Slider sMax = MaxVoxelsSlider;
+        Text tMin = MinVoxelsSlider.GetComponentInChildren<Text>();
+        Text tMax = MaxVoxelsSlider.GetComponentInChildren<Text>();
+        switch (type)
+        {
+            case "Points":
+                thisMode = modes[pointsFilterMode];
+                sMin = MinPointsSlider;
+                sMax = MaxPointsSlider;
+                tMin = MinVoxelsSlider.GetComponentInChildren<Text>();
+                tMax = MaxVoxelsSlider.GetComponentInChildren<Text>();
+                break;
+            default:
+                thisMode = modes[voxelFilterMode];
+                sMin = MinVoxelsSlider;
+                sMax = MaxVoxelsSlider;
+                tMin = MinPointsSlider.GetComponentInChildren<Text>();
+                tMax = MaxPointsSlider.GetComponentInChildren<Text>();
+                break;
+        }
+        sMin.maxValue = sMax.value;
+        thisMode.CurrentValueMin = sMin.value;
+        thisMode.CurrentValueMax = sMax.value;
+        tMin.text = sMin.value.ToString();
+        tMax.text = sMax.value.ToString();
+    }
+}
+
+public class FilterModeClass
+{
+    public FilterModeClass ()
+    {
+        filterMode = VoxelInspector.FilterMode.None;
+        Min = 0;
+        Max = 1;
+        Visibilty = 1;
+        CurrentValueMax = 1;
+        CurrentValueMin = 0;
+    }
+    public FilterModeClass (VoxelInspector.FilterMode mode, float min, float max, float vis)
+    {
+        filterMode = mode;
+        Min = min;
+        Max = max;
+        Visibilty = vis;
+        CurrentValueMax = Max;
+        CurrentValueMin = Min;
+    }
+    public VoxelInspector.FilterMode filterMode { get; set; }
+    public float Min { get; set; }
+    public float Max { get; set; }
+    public float Visibilty { get; set; }
+    public float CurrentValueMax { get; set; }
+    public float CurrentValueMin { get; set; }
 }

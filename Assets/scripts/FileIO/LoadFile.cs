@@ -79,38 +79,49 @@ public class LoadFile
             var full = sr.ReadToEnd();
             sr.Close();
             var del = new string[] { "||VAME||" };
+            var none = "NONE";
             var split = full.Split(del, System.StringSplitOptions.None);
             //foreach (var ddd in split)
             //{
             //    MonoBehaviour.print(ddd);
             //}
-            if (split.Length > 5)
+            if (split.Length > 6)
             {
-                var paths = split[5];
-                var pathsFileName = newDir.FullName + "/paths.gcd";
-                StreamWriter psr = File.CreateText(pathsFileName);
-                psr.Write(paths);
-                psr.Close();
-                LoadIt(pathsFileName);
+                var pathsCode = split[6];
+                if (pathsCode != none)
+                {
+                    var pathsExtension = "." + split[5];
+                    var pathsFileName = newDir.FullName + "/paths" + pathsExtension;
+                    StreamWriter psr = File.CreateText(pathsFileName);
+                    psr.Write(pathsCode);
+                    psr.Close();
+                    LoadIt(pathsFileName);
+                }
             }
             if (split.Length > 3)
             {
                 var cct = split[4];
-                var ccatFileName = newDir.FullName + "/ccat.cct";
-                StreamWriter csr = File.CreateText(ccatFileName);
-                csr.Write(cct);
-                csr.Close();
-                LoadIt(ccatFileName);
+                if (cct != none)
+                {
+                    var ccatFileName = newDir.FullName + "/ccat.cct";
+                    StreamWriter csr = File.CreateText(ccatFileName);
+                    csr.Write(cct);
+                    csr.Close();
+                    LoadIt(ccatFileName);
+                }
             }
             if (split.Length > 2)
             {
                 var model = split[3];
-                var modelExtension = "." + split[2];
-                var modelFileName = newDir.FullName + "/model" + modelExtension;
-                StreamWriter msr = File.CreateText(modelFileName);
-                msr.Write(model);
-                msr.Close();
-                LoadIt(modelFileName);
+                if (model != none)
+                {
+                    var modelExtension = "." + split[2];
+                    var modelFileName = newDir.FullName + "/model" + modelExtension;
+                    StreamWriter msr = File.CreateText(modelFileName);
+                    msr.Write(model);
+                    msr.Close();
+                    LoadIt(modelFileName);
+                }
             }
 
             if (split.Length > 0)

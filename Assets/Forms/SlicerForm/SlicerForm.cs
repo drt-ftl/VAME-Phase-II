@@ -397,7 +397,7 @@ namespace SlicerForm
                         if (mPos.X > sPos.x - dim && mPos.X < sPos.x + dim
                             && mPos.Y > sPos.y - dim && mPos.Y < sPos.y + dim)
                         {
-                            VoxelInspector.instance.SetParams();
+                            VoxelInspector.instance.SetParams("Voxels");
                             SloxelNumber.Value = sloxList.IndexOf(sloxel);
                             selectedBall = null;
                             selectedPathLine = null;

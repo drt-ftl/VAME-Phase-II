@@ -14,15 +14,29 @@ public class Voxel
     public Vector3 origin { get; internal set; }
     public Vector3 Scale { get; internal set; }
     public GameObject Cube { get; set; }
+    public int NumIntersections
+    {
+        get
+        {
+            var num = 0;
+            foreach (var sloxel in Sloxels)
+            {
+                num++;
+            }
+            return num;
+        }
+    }
     public void SetDistances ()
     {
         var running = 0f;
         var i = 0f;
+        var distances = new List<float>();
         foreach (var sloxel in Sloxels)
         {
             foreach (var d in sloxel.distances)
             {
                 running += d;
+                distances.Add(d);
                 i++;
             }
         }
@@ -33,7 +47,10 @@ public class Voxel
         else MeanSeparation = -1;
         if (MeanSeparation > Sloxelizer2.instance.HighestMean)
             Sloxelizer2.instance.HighestMean = MeanSeparation;
+        MinSeparation = Mathf.Min(distances.ToArray());
+        MaxSeparation = Mathf.Max(distances.ToArray());
     }
-    public float MaxSeaparation { get; set; }
+    public float MinSeparation { get; set; }
+    public float MaxSeparation { get; set; }
     public float MeanSeparation { get; set; }
 }

@@ -9,7 +9,7 @@ public class Info : MonoBehaviour
     private Sloxelizer2 sl2;
     bool activated = false;
     string txt = "";
-    public enum State { Standard, Highlighted, Selected }
+    public enum State { Standard, Highlighted, Selected, PartOfSet }
     public State state;
 
     public void Activate (Voxel _voxel, Sloxelizer2 _sl2)
@@ -19,25 +19,31 @@ public class Info : MonoBehaviour
         sl2 = _sl2;
         Voxel();
         activated = true;
+        gameObject.GetComponent<Renderer>().material = VoxelInspector.instance.standard;
     }
 
     void Update()
     {
-        var col = VoxelInspector.instance.standard.color;
-        if (col.a < 0.1f && GetComponent<Renderer>().enabled && GetComponent<Collider>().enabled && this != VAME_Manager.instance.selectedVoxelInfo)
-            SetActive(false);
-        else if (col.a >= 0.1f && !GetComponent<Renderer>().enabled && !GetComponent<Collider>().enabled)
-            SetActive(true);
+        if (state != State.Selected || state != State.PartOfSet)
+        {
+            //gameObject.GetComponent<MeshRenderer>().material.color = VoxelInspector.instance.baseColor;
+            //if (VoxelInspector.instance.baseColor.a < 0.1f)
+            //    SetActive(false);
+            //else SetActive(true);
+        }
     }
 
     public void SetActive(bool active)
     {
-        if (active)
+        if (state == State.Selected || state == State.PartOfSet && !active) return;
+        if (VAME_Manager.instance.selectedVoxelInfo == this) return;
+
+        if (active && !GetComponent<Renderer>().enabled && !GetComponent<Collider>().enabled)
         {
             GetComponent<Renderer>().enabled = true;
             GetComponent<Collider>().enabled = true;
         }
-        else
+        else if (!active && GetComponent<Renderer>().enabled && GetComponent<Collider>().enabled)
         {
             GetComponent<Renderer>().enabled = false;
             GetComponent<Collider>().enabled = false;
@@ -51,14 +57,14 @@ public class Info : MonoBehaviour
     void OnMouseOver()
     {
         if (this == VAME_Manager.instance.selectedVoxelInfo) return;
-        gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.highlight;
+        gameObject.GetComponent<MeshRenderer>().material.color = Color.cyan;
         state = State.Highlighted;
     }
 
     void OnMouseExit()
     {
         if (this == VAME_Manager.instance.selectedVoxelInfo) return;
-        gameObject.GetComponent<MeshRenderer>().material = VoxelInspector.instance.standard;
+        gameObject.GetComponent<MeshRenderer>().material.color = VoxelInspector.instance.baseColor;
         state = State.Standard;
     }
 
@@ -74,7 +80,7 @@ public class Info : MonoBehaviour
         var ind = VAME_Manager.pathHeights.IndexOf(h);
         if (directClick)
             VAME_Manager.slicerForm.ChangeLayer(ind, voxel);
-        gameObject.GetComponent<Renderer>().material = VoxelInspector.instance.selected;
+        gameObject.GetComponent<MeshRenderer>().material.color = Color.yellow;
         txt = "";
         txt += "Voxel ID: " + Sloxelizer2.instance.voxels.IndexOf(voxel) + "\n\n";
         txt += "Contains " + voxel.Sloxels.Count.ToString() + " Voxels" + "\n";

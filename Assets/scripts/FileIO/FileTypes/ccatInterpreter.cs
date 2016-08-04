@@ -15,11 +15,18 @@ public class ccatInterpreter
     public Vector3 MinVector = Vector3.one * 1000000;
     public Vector3 MaxVector = Vector3.one * -1000000;
     private Vector3 Centroid = Vector3.zero;
+    public float MaxDistanceError = 0;
+    public float MaxTimeError = 1;
+    public float MaxTemperature = 0;
+    public enum BallState { Default, Highlighted, Selected, PartOfSet }
 
 
     public ccatInterpreter (string _path, bool real)
     {
         instance = this;
+        MaxDistanceError = 0;
+        MaxTimeError = 1;
+        MaxTemperature = 0;
         var tr = File.OpenText(_path);
         bool afterFirst = false;
         while (!tr.EndOfStream)
@@ -78,6 +85,19 @@ public class ccatInterpreter
             afterFirst = true;
         }
         tr.Close();
+        var distances = new List<float>();
+        var i = 0;
+        var size = VAME_Manager.Max - VAME_Manager.Min;
+        var biggest = Mathf.Max(size.x, size.y, size.z);
+        var ratio = Mathf.Abs(VAME_Manager.instance.initialScale / biggest);
+        foreach (var cb in VAME_Manager.crazyBalls)
+        {
+            cb.GetComponent<ccatBall>().Distance /= ratio;
+            distances.Add(cb.GetComponent<ccatBall>().Distance);
+        }
+        if (distances.Count > 0)
+            MaxDistanceError = Mathf.Max(distances.ToArray());
+        else MaxDistanceError = 0.1f;
         //stepsize = runningDistance / (points.Count - 1163);
         var smallStr = "";
         smallStr += points.Count.ToString() + " Points.\r\n";

@@ -9,6 +9,9 @@ public class Sloxelizer2
     public List<Voxel> voxels = new List<Voxel>();
     public static Sloxelizer2 instance;
     public float HighestMean = 0;
+    public float HighestSeparation = 0;
+    public float HighestNumIntersects = 0;
+    public List<Info> highlightedVoxels = new List<Info>();
 
     [HideInInspector]
     public float increment;
@@ -19,6 +22,7 @@ public class Sloxelizer2
         
         //cSection.instance.DoSlices(20);
         sloxels = new Dictionary<float, List<Sloxel>>();
+        highlightedVoxels = new List<Info>();
         var min = VAME_Manager.PathsMin;
         var max = VAME_Manager.PathsMax;
         min.x = Mathf.Floor(min.x * divs) / divs;
@@ -50,6 +54,7 @@ public class Sloxelizer2
                     }
                     var getInts = GetIntersects(new Vector3(x, cSect.Key, z));
                     if (getInts.Count < 1) continue;
+                    if (getInts.Count > HighestNumIntersects) HighestNumIntersects = getInts.Count;
                     var newSloxel = new Sloxel(new Vector3(x, cSect.Key, z), getInts, increment);
                     newSloxel.SetDistances();
                     if (!sloxels[cSect.Key].Contains(newSloxel))
@@ -86,6 +91,7 @@ public class Sloxelizer2
                     if (newVoxel.Sloxels.Count > 0)
                     {
                         newVoxel.SetDistances();
+                        if (newVoxel.NumIntersections > HighestNumIntersects) HighestNumIntersects = newVoxel.NumIntersections;
                         voxels.Add(newVoxel);
                     }
                 }
@@ -97,8 +103,11 @@ public class Sloxelizer2
         }
         VAME_Manager.slicerForm.Show();
         VAME_Manager.slicerForm.panel1.Invalidate();
-        VoxelInspector.instance.Min.interactable = true;
-        VoxelInspector.instance.Max.interactable = true;
+        VoxelInspector.instance.MinVoxelsSlider.interactable = true;
+        VoxelInspector.instance.MaxVoxelsSlider.interactable = true;
+        VoxelInspector.instance.MinPointsSlider.interactable = true;
+        VoxelInspector.instance.MaxPointsSlider.interactable = true;
+        VoxelInspector.instance.InitializeParams();
     }
 
     public List<Vector2> GetIntersects(Vector3 p)

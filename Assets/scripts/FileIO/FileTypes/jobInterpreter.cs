@@ -99,6 +99,18 @@ public class jobInterpreter
             if (index == 0) continue;
             //VAME_Manager.averagePathsHeight += h - VAME_Manager.pathHeights[index - 1];
         }
+        var buildEndTime = 1f;
+        if (VAME_Manager.allPathLines.Count > 0)
+        {
+            buildEndTime = VAME_Manager.allPathLines[VAME_Manager.allPathLines.Count - 1].EndTime;
+            if (buildEndTime <= 0)
+                buildEndTime = 1f;
+        }
+        foreach (var pathLine in VAME_Manager.allPathLines)
+        {
+            pathLine.StartTime /= buildEndTime;
+            pathLine.EndTime /= buildEndTime;
+        }
         //VAME_Manager.averagePathsHeight /= VAME_Manager.pathPoints.Count;
         if (VAME_Manager.slicerForm != null)
         {

@@ -17,6 +17,7 @@ public class InspectorL : MonoBehaviour
 
     public Slider visibiltySlider;
     public Slider pathVisibiltySlider;
+    public Slider pointVisibiltySlider;
     public Slider pathsMaxSlider;
     public Slider pathsMinSlider;
     public static float modelVisibility = 1.0f;
@@ -108,6 +109,12 @@ public class InspectorL : MonoBehaviour
     {
         pathVisibility = pathVisibiltySlider.value;
         pathVisibiltySlider.gameObject.GetComponentInChildren<Text>().text = "Visibility: " + (pathVisibiltySlider.value * 100).ToString("f0") + "%";
+    }
+
+    public void slidePointVisibility()
+    {
+        pointVisibility = pointVisibiltySlider.value;
+        pointVisibiltySlider.gameObject.GetComponentInChildren<Text>().text = "Visibility: " + (pointVisibiltySlider.value * 100).ToString("f0") + "%";
     }
 
     public void ScrollCode()
