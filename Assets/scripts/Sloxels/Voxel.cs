@@ -29,6 +29,8 @@ public class Voxel
     public void SetDistances ()
     {
         var running = 0f;
+        var runningMin = 10000f;
+        var runningMax = 0f;
         var i = 0f;
         var distances = new List<float>();
         foreach (var sloxel in Sloxels)
@@ -36,6 +38,10 @@ public class Voxel
             foreach (var d in sloxel.distances)
             {
                 running += d;
+                if (d < runningMin)
+                    runningMin = d;
+                if (d > runningMax)
+                    runningMax = d;
                 distances.Add(d);
                 i++;
             }
@@ -47,6 +53,10 @@ public class Voxel
         else MeanSeparation = -1;
         if (MeanSeparation > Sloxelizer2.instance.HighestMean)
             Sloxelizer2.instance.HighestMean = MeanSeparation;
+        MinSeparation = runningMin;
+        MaxSeparation = runningMax;
+        if (MaxSeparation > Sloxelizer2.instance.HighestSeparation)
+            Sloxelizer2.instance.HighestSeparation = MaxSeparation;
         MinSeparation = Mathf.Min(distances.ToArray());
         MaxSeparation = Mathf.Max(distances.ToArray());
     }

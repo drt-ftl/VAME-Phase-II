@@ -30,6 +30,7 @@ public class jobInterpreter
     public jobInterpreter(string _filename)
     {
         instance = this;
+        LaserOn = true;
         y = 0;
         Min = Vector3.one * 10000;
         Max = Vector3.one * -10000;
@@ -42,6 +43,7 @@ public class jobInterpreter
             var s = reader.ReadLine();
             scanJOB(s);
         }
+        reader.Close();
         if (VAME_Manager.pathsCode.Count == 0) return;
         VAME_Manager.PathsMax = Max;
         VAME_Manager.PathsMin = Min;
@@ -64,7 +66,7 @@ public class jobInterpreter
                     continue;
                 var p0 = VAME_Manager.pathPoints[list.Key][index - 1];
                 var v0 = p0.pp;
-                var newSegment = new PathLine(v0, v1);
+                var newSegment = new PathLine(v0, v1, pp.LaserOn);
                 if (v0.y != v1.y)
                     newSegment.Show = false;
                 newSegment.StartTime = lastEndTime;
@@ -121,7 +123,16 @@ public class jobInterpreter
     void scanJOB(string _line)
     {
         VAME_Manager.pathsCode.Add(_line.ToString() + "\r\n");
-        if (_line.StartsWith("G90")) LaserOn = !LaserOn;
+        if (_line.Contains("M14"))
+        {
+            LaserOn = true;
+            return;
+        }
+        if (_line.Contains("M15"))
+        {
+            LaserOn = false;
+            return;
+        }
         if (_line == "\r\n") return;
         _line = _line.Trim();
         if (!_line.Contains(' ')) return;
@@ -194,8 +205,7 @@ public class jobInterpreter
 
         if (!VAME_Manager.pathPoints.ContainsKey(y))
             VAME_Manager.pathPoints.Add(y, new List<pathPoint>());
-        var pp = new pathPoint(newVertex);
-        pp.Show = LaserOn;
+        var pp = new pathPoint(newVertex, LaserOn);
         pp.LineInCode = VAME_Manager.pathsCode.Count - 1;
         VAME_Manager.pathPoints[y].Add(pp);
     }

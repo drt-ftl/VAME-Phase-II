@@ -139,7 +139,6 @@ public class VoxelInspector : MonoBehaviour
                 SetParams("Voxels");
                 break;
         }
-        debugText.text = thisMode.filterMode.ToString();
     }
 
     public void InitializeParams()

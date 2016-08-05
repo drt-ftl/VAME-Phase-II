@@ -57,9 +57,8 @@ public class gcdInterpreter
                     continue;
                 var p0 = VAME_Manager.pathPoints[list.Key][index - 1];
                 var v0 = p0.pp;
-                var newSegment = new PathLine(v0, v1);
-                if (v0.y != v1.y)
-                    newSegment.Show = false;
+                var newSegment = new PathLine(v0, v1, true);
+                newSegment.Show = p0.Show; ;
                 newSegment.StartTime = lastEndTime;
                 var d = Vector3.Distance(v1, v0);
                 var endTime = lastEndTime + d;
@@ -222,7 +221,7 @@ public class gcdInterpreter
         
         if (!VAME_Manager.pathPoints.ContainsKey(y))
             VAME_Manager.pathPoints.Add(y, new List<pathPoint>());
-        var pp = new pathPoint(newVertex);
+        var pp = new pathPoint(newVertex, true);
         pp.LineInCode = VAME_Manager.pathsCode.Count - 1;
         pp.Show = LaserOn;
         VAME_Manager.pathPoints[y].Add(pp);
@@ -268,12 +267,14 @@ public class gcdInterpreter
 
 public class pathPoint
 {
-    public pathPoint(Vector3 _pp)
+    public pathPoint(Vector3 _pp, bool laserOn)
     {
         pp = _pp;
         Show = true;
+        LaserOn = laserOn;
     }
     public Vector3 pp { get; set; }
     public int LineInCode { get; set; }
     public bool Show { get; set; }
+    public bool LaserOn { get; set; }
 }

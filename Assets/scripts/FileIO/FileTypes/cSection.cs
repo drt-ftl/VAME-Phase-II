@@ -38,7 +38,7 @@ public class cSection : MonoBehaviour
             var newList = new List<PathLine>();
             foreach (var line in lines)
             {
-                newList.Add(new PathLine(line.p1, line.p2));
+                newList.Add(new PathLine(line.p1, line.p2, true));
             }
             cSectionsY.Add(newList);
         }
@@ -49,7 +49,7 @@ public class cSection : MonoBehaviour
             var newList = new List<PathLine>();
             foreach (var line in lines)
             {
-                newList.Add(new PathLine(line.p1, line.p2));
+                newList.Add(new PathLine(line.p1, line.p2, true));
             }
             cSectionsX.Add(newList);
         }
@@ -60,7 +60,7 @@ public class cSection : MonoBehaviour
             var newList = new List<PathLine>();
             foreach (var line in lines)
             {
-                newList.Add(new PathLine(line.p1, line.p2));
+                newList.Add(new PathLine(line.p1, line.p2, true));
             }
             cSectionsZ.Add(newList);
         }
@@ -75,7 +75,7 @@ public class cSection : MonoBehaviour
             var newList = new List<PathLine>();
             foreach (var line in lines)
             {
-                newList.Add(new PathLine(line.p1, line.p2));
+                newList.Add(new PathLine(line.p1, line.p2, true));
             }
             cSectionsGCD.Add(list.Key, newList);
         }
@@ -107,21 +107,21 @@ public class cSection : MonoBehaviour
                 {
                     var p_23 = p2 + m_23 * t_23;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_23, p_31);
+                    var s = new PathLine(p_23, p_31, true);
                     lines.Add(s);
                 }
                 else if (p3.y > y)                              // p1 p3 above. p2 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
                 else                                            // p1 above. p2 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
             }
@@ -131,14 +131,14 @@ public class cSection : MonoBehaviour
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
                 else                                            // p2 above. p1 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
             }
@@ -146,7 +146,7 @@ public class cSection : MonoBehaviour
             {
                 var p_23 = p2 + m_23 * t_23;
                 var p_31 = p3 + m_31 * t_31;
-                var s = new PathLine(p_23, p_31);
+                var s = new PathLine(p_23, p_31, true);
                 lines.Add(s);
             }
 
@@ -190,21 +190,21 @@ public class cSection : MonoBehaviour
                 {
                     var p_23 = p2 + m_23 * t_23;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_23, p_31);
+                    var s = new PathLine(p_23, p_31, true);
                     lines.Add(s);
                 }
                 else if (p3.x > x)                              // p1 p3 above. p2 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
                 else                                            // p1 above. p2 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
             }
@@ -214,14 +214,14 @@ public class cSection : MonoBehaviour
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
                 else                                            // p2 above. p1 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
             }
@@ -229,7 +229,7 @@ public class cSection : MonoBehaviour
             {
                 var p_23 = p2 + m_23 * t_23;
                 var p_31 = p3 + m_31 * t_31;
-                var s = new PathLine(p_23, p_31);
+                var s = new PathLine(p_23, p_31, true);
                 lines.Add(s);
             }
 
@@ -273,21 +273,21 @@ public class cSection : MonoBehaviour
                 {
                     var p_23 = p2 + m_23 * t_23;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_23, p_31);
+                    var s = new PathLine(p_23, p_31, true);
                     lines.Add(s);
                 }
                 else if (p3.z > z)                              // p1 p3 above. p2 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
                 else                                            // p1 above. p2 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
             }
@@ -297,14 +297,14 @@ public class cSection : MonoBehaviour
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_31 = p3 + m_31 * t_31;
-                    var s = new PathLine(p_12, p_31);
+                    var s = new PathLine(p_12, p_31, true);
                     lines.Add(s);
                 }
                 else                                            // p2 above. p1 p3 below.
                 {
                     var p_12 = p1 + m_12 * t_12;
                     var p_23 = p2 + m_23 * t_23;
-                    var s = new PathLine(p_12, p_23);
+                    var s = new PathLine(p_12, p_23, true);
                     lines.Add(s);
                 }
             }
@@ -312,7 +312,7 @@ public class cSection : MonoBehaviour
             {
                 var p_23 = p2 + m_23 * t_23;
                 var p_31 = p3 + m_31 * t_31;
-                var s = new PathLine(p_23, p_31);
+                var s = new PathLine(p_23, p_31, true);
                 lines.Add(s);
             }
 
@@ -336,16 +336,18 @@ public class cSection : MonoBehaviour
 public class PathLine
 {
     bool show = true;
-    public PathLine(Vector3 _p1, Vector3 _p2)
+    public PathLine(Vector3 _p1, Vector3 _p2, bool laserOn)
     {
         p1 = _p1;
         p2 = _p2;
         Show = true;
         Color = VAME_Manager.instance.pathColor;
         ccatBalls = new List<GameObject>();
+        LaserOn = laserOn;
     }
     public Vector3 p1 { get; set; }
     public Vector3 p2 { get; set; }
+    public bool LaserOn { get; set; }
     public bool Show
     {
         get

@@ -91,6 +91,7 @@ public class VAME_Manager : MonoBehaviour
         //GL.Color(col);
         foreach (var line in allPathLines)
         {
+            if (!line.LaserOn) continue;
             if (line.Show)
             {
                 var col = line.Color;
@@ -379,7 +380,7 @@ public class VAME_Manager : MonoBehaviour
             newVoxel.transform.SetParent(voxelHolder);
             voxel.Cube = newVoxel;
         }
-        AssignCrazyBallsToSloxels();
+        AssignCrazyBallsToSloxels();        
     }
 
     public void CrazyBalls()
@@ -412,6 +413,7 @@ public class VAME_Manager : MonoBehaviour
             var index = crazyBalls.IndexOf(cb);
             cb.GetComponent<ccatBall>().Activate(index, (float)index/ crazyBalls.Count);
         }
+
     }
 
     public void AssignCrazyBallsToSloxels()
@@ -451,11 +453,11 @@ public class VAME_Manager : MonoBehaviour
                                 crazyBall.GetComponent<ccatBall>().SetColor(cu);
                             }
                             sloxel.ccatBalls.Add(crazyBall);
-                        }
+                        }                        
                     }
                 }
             }
-        }
+        }        
     }
     public void ResolutionChanged()
     {

@@ -122,7 +122,6 @@ public class ccatBall : MonoBehaviour
             else if (t > 1)
             {
                 var d = Vector3.Distance(p2, pt);
-                d /= 4.0f;
                 if (d < Distance || Distance < 0)
                 {
                     ClosestLine = testLine;
@@ -135,7 +134,6 @@ public class ccatBall : MonoBehaviour
             {
                 var closest = new Vector3(p1.x + t * dx, 0, p1.z + t * dz);
                 var d = Vector3.Distance(closest, pt);
-                d /= 4.0f;
                 if (d < Distance || Distance < 0)
                 {
                     ClosestLine = testLine;
@@ -146,7 +144,6 @@ public class ccatBall : MonoBehaviour
                 }
             }
         }
-        //CurrentColor();
     }
 
     public void SetActive(bool active)
