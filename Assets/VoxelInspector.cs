@@ -18,6 +18,11 @@ public class VoxelInspector : MonoBehaviour
     public Slider VisibilitySlider;
     public Dropdown voxelDropdown;
     public Dropdown pointsDropdown;
+    public Text voxelMinText;
+    public Text voxelMaxText;
+    public Text pointsMinText;
+    public Text pointsMaxText;
+    public Text debugText;
 
     public enum FilterMode { None, MinSepPaths, MedianPaths, NumIntersectionsPaths, DistanceErrorPoints, TimeErrorPoints, TemperaturePoints }
     [HideInInspector]
@@ -62,6 +67,7 @@ public class VoxelInspector : MonoBehaviour
         switch (_filterMode)
         {
             case "Voxels":
+                type = "Voxels";
                 switch (voxelDropdown.value)
                 {
                     case (1):
@@ -79,7 +85,6 @@ public class VoxelInspector : MonoBehaviour
                 }
 
                 thisMode = modes[voxelFilterMode];
-                SetParams("Voxels");
                 break;
             case "Points":
                 type = "Points";
@@ -115,25 +120,26 @@ public class VoxelInspector : MonoBehaviour
                 MinPointsSlider.maxValue = cMax;
                 MinPointsSlider.minValue = min;
                 MinPointsSlider.value = cMin;
-                MinPointsSlider.GetComponentInChildren<Text>().text = cMin.ToString();
+                pointsMinText.text = "Min: " + cMin.ToString();
                 MaxPointsSlider.maxValue = max;
                 MaxPointsSlider.minValue = min;
                 MaxPointsSlider.value = cMax;
-                MaxPointsSlider.GetComponentInChildren<Text>().text = cMax.ToString();
+                pointsMaxText.text = "Max: " + cMax.ToString();
                 SetParams("Points");
                 break;
             default:
                 MinVoxelsSlider.maxValue = cMax;
                 MinVoxelsSlider.minValue = min;
                 MinVoxelsSlider.value = cMin;
-                MinVoxelsSlider.GetComponentInChildren<Text>().text = cMin.ToString();
+                voxelMinText.text = "Min: " + cMin.ToString();
                 MaxVoxelsSlider.maxValue = max;
                 MaxVoxelsSlider.minValue = min;
                 MaxVoxelsSlider.value = cMax;
-                MaxVoxelsSlider.GetComponentInChildren<Text>().text = cMax.ToString();
+                voxelMaxText.text = "Max: " + cMax.ToString();
                 SetParams("Voxels");
                 break;
         }
+        debugText.text = thisMode.filterMode.ToString();
     }
 
     public void InitializeParams()
@@ -207,8 +213,7 @@ public class VoxelInspector : MonoBehaviour
                 foreach (var ball in VAME_Manager.crazyBalls)
                 {
                     var cb = ball.GetComponent<ccatBall>();
-                    var state = cb.ballState;
-                    float pValue;
+                    float pValue = 0;
                     switch (pointsFilterMode)
                     {
                         case FilterMode.DistanceErrorPoints:
@@ -267,22 +272,20 @@ public class VoxelInspector : MonoBehaviour
                 thisMode = modes[pointsFilterMode];
                 sMin = MinPointsSlider;
                 sMax = MaxPointsSlider;
-                tMin = MinVoxelsSlider.GetComponentInChildren<Text>();
-                tMax = MaxVoxelsSlider.GetComponentInChildren<Text>();
+                pointsMinText.text = sMin.value.ToString();
+                pointsMaxText.text = sMax.value.ToString();
                 break;
             default:
                 thisMode = modes[voxelFilterMode];
                 sMin = MinVoxelsSlider;
                 sMax = MaxVoxelsSlider;
-                tMin = MinPointsSlider.GetComponentInChildren<Text>();
-                tMax = MaxPointsSlider.GetComponentInChildren<Text>();
+                voxelMinText.text = sMin.value.ToString();
+                voxelMaxText.text = sMax.value.ToString();
                 break;
         }
         sMin.maxValue = sMax.value;
         thisMode.CurrentValueMin = sMin.value;
         thisMode.CurrentValueMax = sMax.value;
-        tMin.text = sMin.value.ToString();
-        tMax.text = sMax.value.ToString();
     }
 }
 
